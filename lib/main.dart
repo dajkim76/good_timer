@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wakelock/wakelock.dart';
 
 void main() {
   runApp(const MyApp());
@@ -82,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
     isFocusMode = !isFocusMode;
     if (_timer == null) {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-
+        Wakelock.enable();
         setState(() {
           _counter ++;
           if (_getModeSeconds() - _counter <= 0) {
@@ -99,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
         isFocusMode = false;
         _counter = 0;
       });
+      Wakelock.disable();
     }
   }
 
