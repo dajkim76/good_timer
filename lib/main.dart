@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -63,11 +64,19 @@ class _MyHomePageState extends State<MyHomePage> {
   int focusSeconds = kDebugMode ? 15 : 25 * 60;
   int breakSeconds = kDebugMode? 5: 5 * 60;
   bool isFocusMode = false;
+  AudioPlayer player = AudioPlayer();
+
+  void _playSound()  async {
+    if (isFocusMode) {
+      await player.play(AssetSource("break.wav"));
+    } else {
+      await player.play(AssetSource("focus.wav"));
+    }
+  }
 
   int _getModeSeconds() {
     return isFocusMode ? focusSeconds : breakSeconds;
   }
-
 
   void _onClickStartStopButton() {
     isFocusMode = !isFocusMode;
@@ -79,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_getModeSeconds() - _counter <= 0) {
             _counter = 0;
             isFocusMode = !isFocusMode;
+            _playSound();
           }
         });
       });
