@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -31,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: '내가 만든 뽀모도로'),
     );
   }
 }
@@ -56,16 +59,44 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  Timer? _timer;
+  int focusSeconds = kDebugMode ? 15 : 25 * 60;
+  int breakSeconds = kDebugMode? 5: 5 * 60;
+  bool isFocusMode = false;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  int _getModeSeconds() {
+    return isFocusMode ? focusSeconds : breakSeconds;
+  }
+
+
+  void _onClickStartStopButton() {
+    isFocusMode = !isFocusMode;
+    if (_timer == null) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+
+        setState(() {
+          _counter ++;
+          if (_getModeSeconds() - _counter <= 0) {
+            _counter = 0;
+            isFocusMode = !isFocusMode;
+          }
+        });
+      });
+    } else {
+      _timer?.cancel();
+      _timer = null;
+      setState(() {
+        isFocusMode = false;
+        _counter = 0;
+      });
+    }
+  }
+
+  String _getTimeText() {
+    int remainSeconds = _getModeSeconds() - _counter;
+    int min = (remainSeconds / 60).toInt();
+    int sec = (remainSeconds % 60);
+    return "$min:$sec";
   }
 
   @override
@@ -105,20 +136,20 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Text(
+              isFocusMode ? '포커스!! 집중하세요' : "휴식중...",
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              _getTimeText(),
+              style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.red : Colors.black)),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        onPressed: _onClickStartStopButton,
+        tooltip: '시작 / 종료',
+        child: Icon(_timer == null ? Icons.not_started_outlined: Icons.stop_circle_outlined),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
