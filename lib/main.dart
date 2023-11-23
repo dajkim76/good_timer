@@ -114,10 +114,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String _getTimeText() {
+    if (_timer == null) return " ";
     int remainSeconds = _getModeSeconds() - _counter;
-    int min = (remainSeconds / 60).toInt();
-    int sec = (remainSeconds % 60);
+    String min = (remainSeconds / 60).toInt().toString();
+    String sec = (remainSeconds % 60).toString();
+    if (min.length == 1) min = "0$min";
+    if (sec.length == 1) sec = "0$sec";
     return "$min:$sec";
+  }
+
+  String _getModeLabel() {
+    if (_timer == null) return "준비";
+    return isFocusMode ? '포커스!! 집중하세요' : "휴식중...";
+  }
+
+  Color _getModeLabelColor() {
+    if (_timer == null) return Colors.white70;
+    return isFocusMode ? Colors.green : Colors.grey;
   }
 
   @override
@@ -170,8 +183,8 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  isFocusMode ? '포커스!! 집중하세요' : "휴식중...",
-                  style: const TextStyle(color: Colors.green, fontSize: 40),
+                  _getModeLabel(),
+                  style: TextStyle(color: _getModeLabelColor(), fontSize: 40),
                 ),
                 Text(
                   _getTimeText(),
