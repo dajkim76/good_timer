@@ -89,10 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onClickStartStopButton() {
-    isFocusMode = !isFocusMode;
     if (_timer == null) {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        Wakelock.enable();
         setState(() {
           _counter++;
           if (_getModeSeconds() - _counter <= 0) {
@@ -102,6 +100,11 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         });
       });
+      setState(() {
+        isFocusMode = true;
+        _counter = 0;
+      });
+      Wakelock.enable();
     } else {
       _timer?.cancel();
       _timer = null;
