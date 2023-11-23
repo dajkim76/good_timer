@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   Timer? _timer;
   int focusSeconds = kDebugMode ? 15 : 25 * 60;
-  int breakSeconds = kDebugMode? 5: 5 * 60;
+  int breakSeconds = kDebugMode ? 5 : 5 * 60;
   bool isFocusMode = false;
   AudioPlayer player = AudioPlayer();
 
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
 
-  void _playSound()  async {
+  void _playSound() async {
     if (isFocusMode) {
       await player.play(AssetSource("break.wav"));
     } else {
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         Wakelock.enable();
         setState(() {
-          _counter ++;
+          _counter++;
           if (_getModeSeconds() - _counter <= 0) {
             _counter = 0;
             isFocusMode = !isFocusMode;
@@ -129,65 +129,71 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return WillPopScope(
-    child: Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Colors.black,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title, style: const TextStyle(color: Colors.white24),),
-        // 명시적으로 페이지 종료버튼을 추가
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => {
-            // TODO: check iOS
-            SystemNavigator.pop()
-          },
-        ),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              isFocusMode ? '포커스!! 집중하세요' : "휴식중...",
-              style: const TextStyle(color: Colors.green, fontSize: 40),
+        child: Scaffold(
+          appBar: AppBar(
+            // TRY THIS: Try changing the color here to a specific color (to
+            // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+            // change color while the other colors stay the same.
+            backgroundColor: Colors.black,
+            // Here we take the value from the MyHomePage object that was created by
+            // the App.build method, and use it to set our appbar title.
+            title: Text(
+              widget.title,
+              style: const TextStyle(color: Colors.white24),
             ),
-            Text(
-              _getTimeText(),
-              style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
+            // 명시적으로 페이지 종료버튼을 추가
+            leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => {
+                // TODO: check iOS
+                SystemNavigator.pop()
+              },
             ),
-          ],
+          ),
+          body: Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: Column(
+              // Column is also a layout widget. It takes a list of children and
+              // arranges them vertically. By default, it sizes itself to fit its
+              // children horizontally, and tries to be as tall as its parent.
+              //
+              // Column has various properties to control how it sizes itself and
+              // how it positions its children. Here we use mainAxisAlignment to
+              // center the children vertically; the main axis here is the vertical
+              // axis because Columns are vertical (the cross axis would be
+              // horizontal).
+              //
+              // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+              // action in the IDE, or press "p" in the console), to see the
+              // wireframe for each widget.
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  isFocusMode ? '포커스!! 집중하세요' : "휴식중...",
+                  style: const TextStyle(color: Colors.green, fontSize: 40),
+                ),
+                Text(
+                  _getTimeText(),
+                  style: TextStyle(
+                      fontSize: 100,
+                      color: (isFocusMode ? Colors.yellow : Colors.grey)),
+                ),
+              ],
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.blueGrey,
+            onPressed: _onClickStartStopButton,
+            tooltip: '시작 / 종료',
+            child: Icon(_timer == null
+                ? Icons.not_started_outlined
+                : Icons.stop_circle_outlined),
+          ), // This trailing comma makes auto-formatting nicer for build methods.
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueGrey,
-        onPressed: _onClickStartStopButton,
-        tooltip: '시작 / 종료',
-        child: Icon(_timer == null ? Icons.not_started_outlined: Icons.stop_circle_outlined),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    ),
         onWillPop: () {
-        // back키로 페이지 종료를 막는다.
-        return Future.value(false);
-    }
-    );
+          // back키로 페이지 종료를 막는다.
+          return Future.value(false);
+        });
   }
 }
