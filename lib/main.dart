@@ -159,7 +159,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             // 명시적으로 페이지 종료버튼을 추가
             leading: IconButton(
-              icon: const Icon(Icons.close),
+              icon: const Icon(
+                Icons.close,
+                color: Colors.white24,
+              ),
               onPressed: () => {
                 // TODO: check iOS
                 SystemNavigator.pop()
