@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Pomodoro',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -33,10 +34,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         useMaterial3: true,
+        scaffoldBackgroundColor: Colors.black,
       ),
-      home: const MyHomePage(title: '내가 만든 뽀모도로'),
+      home: const MyHomePage(title: '뽀모도로'),
     );
   }
 }
@@ -66,6 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
   int breakSeconds = kDebugMode? 5: 5 * 60;
   bool isFocusMode = false;
   AudioPlayer player = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+    // 풀스크린 만들기
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  }
 
   void _playSound()  async {
     if (isFocusMode) {
@@ -119,15 +128,24 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
+    return WillPopScope(
+    child: Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.black,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(widget.title, style: const TextStyle(color: Colors.white24),),
+        // 명시적으로 페이지 종료버튼을 추가
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => {
+            // TODO: check iOS
+            SystemNavigator.pop()
+          },
+        ),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -150,19 +168,26 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Text(
               isFocusMode ? '포커스!! 집중하세요' : "휴식중...",
+              style: const TextStyle(color: Colors.green, fontSize: 40),
             ),
             Text(
               _getTimeText(),
-              style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.red : Colors.black)),
+              style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueGrey,
         onPressed: _onClickStartStopButton,
         tooltip: '시작 / 종료',
         child: Icon(_timer == null ? Icons.not_started_outlined: Icons.stop_circle_outlined),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    ),
+        onWillPop: () {
+        // back키로 페이지 종료를 막는다.
+        return Future.value(false);
+    }
     );
   }
 }
