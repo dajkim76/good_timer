@@ -85,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   int _getModeSeconds() {
+    if (_timer == null) return focusSeconds;
     return isFocusMode ? focusSeconds : breakSeconds;
   }
 
@@ -117,7 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String _getTimeText() {
-    if (_timer == null) return " ";
     int remainSeconds = _getModeSeconds() - _counter;
     String min = (remainSeconds / 60).toInt().toString();
     String sec = (remainSeconds % 60).toString();
@@ -132,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Color _getModeLabelColor() {
-    if (_timer == null) return Colors.white70;
+    if (_timer == null) return Colors.grey;
     return isFocusMode ? Colors.green : Colors.grey;
   }
 
@@ -155,13 +155,13 @@ class _MyHomePageState extends State<MyHomePage> {
             // the App.build method, and use it to set our appbar title.
             title: Text(
               widget.title,
-              style: const TextStyle(color: Colors.white24),
+              style: const TextStyle(color: Colors.grey),
             ),
             // 명시적으로 페이지 종료버튼을 추가
             leading: IconButton(
               icon: const Icon(
                 Icons.close,
-                color: Colors.white24,
+                color: Colors.grey,
               ),
               onPressed: () => {
                 // TODO: check iOS
