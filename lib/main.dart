@@ -32,6 +32,11 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.black,
+            iconTheme: IconThemeData(color: Colors.white),
+            titleTextStyle: TextStyle(color: Colors.white),
+            actionsIconTheme: IconThemeData(color: Colors.white)),
         scaffoldBackgroundColor: Colors.black,
       ),
       home: const MyHomePage(title: '뽀모도로'),

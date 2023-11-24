@@ -4,6 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:good_timer/settings_page.dart';
 import 'package:wakelock/wakelock.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -99,6 +100,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return isFocusMode ? Colors.green : Colors.grey;
   }
 
+  void _onClickSettings() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const SettingsPage(),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -116,21 +123,22 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.black,
             // Here we take the value from the MyHomePage object that was created by
             // the App.build method, and use it to set our appbar title.
-            title: Text(
-              widget.title,
-              style: const TextStyle(color: Colors.grey),
-            ),
+            title: Text(widget.title),
             // 명시적으로 페이지 종료버튼을 추가
             leading: IconButton(
-              icon: const Icon(
-                Icons.close,
-                color: Colors.grey,
-              ),
+              icon: const Icon(Icons.close),
               onPressed: () => {
                 // TODO: check iOS
                 SystemNavigator.pop()
               },
             ),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: _onClickSettings,
+                tooltip: "Settings",
+              ),
+            ],
           ),
           body: Center(
             // Center is a layout widget. It takes a single child and positions it
@@ -157,9 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Text(
                   _getTimeText(),
-                  style: TextStyle(
-                      fontSize: 100,
-                      color: (isFocusMode ? Colors.yellow : Colors.grey)),
+                  style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
                 ),
               ],
             ),
@@ -168,9 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.blueGrey,
             onPressed: _onClickStartStopButton,
             tooltip: '시작 / 종료',
-            child: Icon(_timer == null
-                ? Icons.not_started_outlined
-                : Icons.stop_circle_outlined),
+            child: Icon(_timer == null ? Icons.not_started_outlined : Icons.stop_circle_outlined),
           ), // This trailing comma makes auto-formatting nicer for build methods.
         ),
         onWillPop: () {
