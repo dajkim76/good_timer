@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int focusSeconds = kDebugMode ? 15 : 25 * 60;
   int breakSeconds = kDebugMode ? 5 : 5 * 60;
   bool isFocusMode = false;
-  AudioPlayer player = AudioPlayer();
+  final assetsAudioPlayer = AssetsAudioPlayer();
 
   @override
   void initState() {
@@ -41,9 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _playSound() async {
     if (isFocusMode) {
-      await player.play(AssetSource("break.wav"));
+      assetsAudioPlayer.open(Audio("assets/break.wav"));
     } else {
-      await player.play(AssetSource("focus.wav"));
+      assetsAudioPlayer.open(Audio("assets/focus.wav"));
     }
   }
 
