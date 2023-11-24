@@ -4,6 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:good_timer/providers.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -41,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _playSound() async {
+    if (!PlaySoundProvider.isPlaySound) return;
     if (isFocusMode) {
       assetsAudioPlayer.open(Audio("assets/break.wav"));
     } else {
