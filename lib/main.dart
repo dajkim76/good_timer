@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:good_timer/providers.dart';
 import 'package:provider/provider.dart';
 
+import 'generated/l10n.dart';
 import 'my_home_page.dart';
 
 void main() {
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pomodoro',
+      onGenerateTitle: (BuildContext context) => S.of(context).appName,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -43,7 +45,14 @@ class MyApp extends StatelessWidget {
             actionsIconTheme: IconThemeData(color: Colors.white)),
         scaffoldBackgroundColor: Colors.black,
       ),
-      home: const MyHomePage(title: '뽀모도로'),
+      home: const MyHomePage(),
+      localizationsDelegates: [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
     );
   }
 }

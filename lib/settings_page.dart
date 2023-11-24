@@ -3,6 +3,8 @@ import 'package:good_timer/providers.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
+import 'generated/l10n.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -17,7 +19,7 @@ class _SettingsState extends State<SettingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Settings"),
+        title: Text(S.of(context).settings),
       ),
       body: Padding(
         padding: EdgeInsets.all(5.0),
@@ -30,7 +32,7 @@ class _SettingsState extends State<SettingsPage> {
                 },
                 initialValue: PlaySoundProvider.isPlaySound,
                 leading: Icon(Icons.surround_sound),
-                title: Text('Play sound'),
+                title: Text(S.of(context).playSound),
               ),
             ])
           ],

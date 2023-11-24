@@ -8,19 +8,14 @@ import 'package:good_timer/providers.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:wakelock/wakelock.dart';
 
+import 'generated/l10n.dart';
+
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -92,9 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return "$min:$sec";
   }
 
-  String _getModeLabel() {
-    if (_timer == null) return "준비";
-    return isFocusMode ? '포커스!! 집중하세요' : "휴식중...";
+  String _getModeLabel(BuildContext context) {
+    if (_timer == null) return S.of(context).ready;
+    return isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
   }
 
   Color _getModeLabelColor() {
@@ -125,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.black,
             // Here we take the value from the MyHomePage object that was created by
             // the App.build method, and use it to set our appbar title.
-            title: Text(widget.title),
+            title: Text(S.of(context).appName),
             // 명시적으로 페이지 종료버튼을 추가
             leading: IconButton(
               icon: const Icon(Icons.close),
@@ -138,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: _onClickSettings,
-                tooltip: "Settings",
+                tooltip: S.of(context).settings,
               ),
             ],
           ),
@@ -162,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  _getModeLabel(),
+                  _getModeLabel(context),
                   style: TextStyle(color: _getModeLabelColor(), fontSize: 40),
                 ),
                 Text(
@@ -175,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
           floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.blueGrey,
             onPressed: _onClickStartStopButton,
-            tooltip: '시작 / 종료',
+            tooltip: S.of(context).tooltip_start_stop,
             child: Icon(_timer == null ? Icons.not_started_outlined : Icons.stop_circle_outlined),
           ), // This trailing comma makes auto-formatting nicer for build methods.
         ),
