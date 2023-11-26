@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:good_timer/good_timer_native_plugin.dart';
 import 'package:good_timer/providers.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:wakelock/wakelock.dart';
@@ -37,6 +38,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     super.initState();
     // 풀스크린 만들기
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+    if (kDebugMode) {
+      GoodTimerNativePlugin.platformVersion.then((value) => Fluttertoast.showToast(msg: value));
+    }
   }
 
   @override
