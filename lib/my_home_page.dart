@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,7 +28,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   static const int kBreakSeconds = kDebugMode ? 5 : 1 * 60;
   bool isFocusMode = false;
   DateTime? backKeyPressedTime;
-  final assetsAudioPlayer = AssetsAudioPlayer();
   DateTime startedTime = DateTime.now();
   static DateTime alarmStartedTime = DateTime.now();
 
@@ -52,9 +50,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void _playSound() async {
     if (!PlaySoundProvider.isPlaySound) return;
     if (isFocusMode) {
-      assetsAudioPlayer.open(Audio("assets/break.wav"));
+      //assetsAudioPlayer.open(Audio("assets/break.wav"));
     } else {
-      assetsAudioPlayer.open(Audio("assets/focus.wav"));
+      //assetsAudioPlayer.open(Audio("assets/focus.wav"));
     }
   }
 
