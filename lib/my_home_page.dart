@@ -4,6 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:good_timer/providers.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:wakelock/wakelock.dart';
@@ -27,6 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int focusSeconds = kDebugMode ? 15 : 25 * 60;
   int breakSeconds = kDebugMode ? 5 : 5 * 60;
   bool isFocusMode = false;
+  DateTime? backKeyPressedTime;
   final assetsAudioPlayer = AssetsAudioPlayer();
 
   @override
@@ -34,6 +36,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     // 풀스크린 만들기
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   void _playSound() async {
@@ -175,8 +183,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ), // This trailing comma makes auto-formatting nicer for build methods.
         ),
         onWillPop: () {
-          // back키로 페이지 종료를 막는다.
-          return Future.value(false);
+          if (_timer == null) return Future.value(true);
+          if (backKeyPressedTime == null || DateTime.now().difference(backKeyPressedTime!).inSeconds >= 2) {
+            backKeyPressedTime = DateTime.now();
+            Fluttertoast.showToast(msg: S.of(context).pressAgainToExit);
+            return Future.value(false);
+          }
+          return Future.value(true);
         });
   }
 }

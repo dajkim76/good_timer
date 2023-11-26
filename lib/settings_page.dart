@@ -31,12 +31,12 @@ class _SettingsState extends State<SettingsPage> {
                   playSoundProvider.save(value);
                 },
                 initialValue: PlaySoundProvider.isPlaySound,
-                leading: Icon(Icons.surround_sound),
+                leading: const Icon(Icons.surround_sound),
                 title: Text(S.of(context).playSound),
               ),
             ])
           ],
-          lightTheme: SettingsThemeData(
+          lightTheme: const SettingsThemeData(
               settingsListBackground: Colors.black,
               titleTextColor: Colors.white,
               leadingIconsColor: Colors.grey,

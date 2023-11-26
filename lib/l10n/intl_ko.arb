@@ -5,5 +5,6 @@
   "ready" : "준비",
   "be_focus": "업무에 집중하세요~",
   "in_rest" : "휴식중... ^^",
-  "playSound": "소리내기"
+  "playSound": "소리내기",
+  "pressAgainToExit": "종료하라면 한 번 더 누르세요"
 }

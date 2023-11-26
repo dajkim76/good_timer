@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// 시간이 다 됬을 때, 소리로 알림 여부
 class PlaySoundProvider with ChangeNotifier {
   late SharedPreferences _sharedPreferences;
 
