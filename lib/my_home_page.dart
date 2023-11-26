@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +25,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   Timer? _timer;
-  static const int kFocusSeconds = kDebugMode ? 10 : 25 * 60;
-  static const int kBreakSeconds = kDebugMode ? 5 : 5 * 60;
+  static const int kFocusSeconds = kDebugMode ? 10 : 5 * 60;
+  static const int kBreakSeconds = kDebugMode ? 5 : 1 * 60;
   bool isFocusMode = false;
   DateTime? backKeyPressedTime;
   final assetsAudioPlayer = AssetsAudioPlayer();
   DateTime startedTime = DateTime.now();
+  static DateTime alarmStartedTime = DateTime.now();
 
   @override
   void initState() {
@@ -61,19 +63,31 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void _onClickStartStopButton() {
     if (_timer == null) {
       _timer = Timer.periodic(const Duration(seconds: 1), _onTimer);
+      AndroidAlarmManager.cancel(1);
       setState(() {
         isFocusMode = true;
         startedTime = DateTime.now();
+        alarmStartedTime = DateTime.now();
+        AndroidAlarmManager.oneShot(Duration(seconds: _getModeSeconds()), 1, _onAlarm,
+            allowWhileIdle: true, wakeup: true, exact: true);
       });
       Wakelock.enable();
     } else {
       _timer?.cancel();
       _timer = null;
+      AndroidAlarmManager.cancel(1);
       setState(() {
         isFocusMode = false;
       });
       Wakelock.disable();
     }
+  }
+
+  @pragma('vm:entry-point')
+  static void _onAlarm() {
+    int seconds = DateTime.now().difference(alarmStartedTime).inSeconds;
+    String alarmSeconds = _getTimeText(seconds);
+    Fluttertoast.showToast(msg: "_onAlarm => $alarmSeconds");
   }
 
   void _onTimer(Timer timer) {
@@ -84,6 +98,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       setState(() {
         isFocusMode = !isFocusMode;
         startedTime = DateTime.now();
+        alarmStartedTime = DateTime.now();
+        AndroidAlarmManager.oneShot(Duration(seconds: _getModeSeconds()), 1, _onAlarm,
+            allowWhileIdle: true, wakeup: true, exact: true);
       });
     } else {
       setState(() {
@@ -103,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return _getTimeText(remainSeconds);
   }
 
-  String _getTimeText(int seconds) {
+  static String _getTimeText(int seconds) {
     String min = (seconds ~/ 60).toString();
     String sec = (seconds % 60).toString();
     if (min.length == 1) min = "0$min";

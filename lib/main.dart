@@ -1,3 +1,4 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:good_timer/providers.dart';
@@ -6,7 +7,9 @@ import 'package:provider/provider.dart';
 import 'generated/l10n.dart';
 import 'my_home_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AndroidAlarmManager.initialize();
   runApp(
     MultiProvider(providers: [ChangeNotifierProvider(create: (_) => PlaySoundProvider())], child: const MyApp()),
   );
