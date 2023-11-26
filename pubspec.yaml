@@ -44,7 +44,6 @@ dependencies:
     sdk: flutter
   intl: any
   fluttertoast: ^8.2.4
-  android_alarm_manager_plus: ^3.0.3
 
 dev_dependencies:
   flutter_test:

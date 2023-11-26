@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,19 +62,15 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void _onClickStartStopButton() {
     if (_timer == null) {
       _timer = Timer.periodic(const Duration(seconds: 1), _onTimer);
-      AndroidAlarmManager.cancel(1);
       setState(() {
         isFocusMode = true;
         startedTime = DateTime.now();
         alarmStartedTime = DateTime.now();
-        AndroidAlarmManager.oneShot(Duration(seconds: _getModeSeconds()), 1, _onAlarm,
-            allowWhileIdle: true, wakeup: true, exact: true);
       });
       Wakelock.enable();
     } else {
       _timer?.cancel();
       _timer = null;
-      AndroidAlarmManager.cancel(1);
       setState(() {
         isFocusMode = false;
       });
@@ -99,8 +94,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         isFocusMode = !isFocusMode;
         startedTime = DateTime.now();
         alarmStartedTime = DateTime.now();
-        AndroidAlarmManager.oneShot(Duration(seconds: _getModeSeconds()), 1, _onAlarm,
-            allowWhileIdle: true, wakeup: true, exact: true);
       });
     } else {
       setState(() {
