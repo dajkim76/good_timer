@@ -22,14 +22,14 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   Timer? _timer;
-  int focusSeconds = kDebugMode ? 15 : 25 * 60;
-  int breakSeconds = kDebugMode ? 5 : 5 * 60;
+  static const int kFocusSeconds = kDebugMode ? 10 : 25 * 60;
+  static const int kBreakSeconds = kDebugMode ? 5 : 5 * 60;
   bool isFocusMode = false;
   DateTime? backKeyPressedTime;
   final assetsAudioPlayer = AssetsAudioPlayer();
+  DateTime startedTime = DateTime.now();
 
   @override
   void initState() {
@@ -54,25 +54,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   int _getModeSeconds() {
-    if (_timer == null) return focusSeconds;
-    return isFocusMode ? focusSeconds : breakSeconds;
+    if (_timer == null) return kFocusSeconds;
+    return isFocusMode ? kFocusSeconds : kBreakSeconds;
   }
 
   void _onClickStartStopButton() {
     if (_timer == null) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        setState(() {
-          _counter++;
-          if (_getModeSeconds() - _counter <= 0) {
-            _counter = 0;
-            isFocusMode = !isFocusMode;
-            _playSound();
-          }
-        });
-      });
+      _timer = Timer.periodic(const Duration(seconds: 1), _onTimer);
       setState(() {
         isFocusMode = true;
-        _counter = 0;
+        startedTime = DateTime.now();
       });
       Wakelock.enable();
     } else {
@@ -80,16 +71,41 @@ class _MyHomePageState extends State<MyHomePage> {
       _timer = null;
       setState(() {
         isFocusMode = false;
-        _counter = 0;
       });
       Wakelock.disable();
     }
   }
 
-  String _getTimeText() {
-    int remainSeconds = _getModeSeconds() - _counter;
-    String min = (remainSeconds / 60).toInt().toString();
-    String sec = (remainSeconds % 60).toString();
+  void _onTimer(Timer timer) {
+    DateTime now = DateTime.now();
+    int remainSeconds = _getModeSeconds() - now.difference(startedTime).inSeconds;
+    if (remainSeconds <= 0) {
+      _playSound();
+      setState(() {
+        isFocusMode = !isFocusMode;
+        startedTime = DateTime.now();
+      });
+    } else {
+      setState(() {
+        // update Ui
+      });
+    }
+  }
+
+  String _getRemainTimeText() {
+    int remainSeconds;
+    if (_timer != null) {
+      DateTime now = DateTime.now();
+      remainSeconds = _getModeSeconds() - now.difference(startedTime).inSeconds;
+    } else {
+      remainSeconds = _getModeSeconds();
+    }
+    return _getTimeText(remainSeconds);
+  }
+
+  String _getTimeText(int seconds) {
+    String min = (seconds ~/ 60).toString();
+    String sec = (seconds % 60).toString();
     if (min.length == 1) min = "0$min";
     if (sec.length == 1) sec = "0$sec";
     return "$min:$sec";
@@ -169,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: TextStyle(color: _getModeLabelColor(), fontSize: 40),
                 ),
                 Text(
-                  _getTimeText(),
+                  _getRemainTimeText(),
                   style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
                 ),
               ],
