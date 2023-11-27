@@ -4,9 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:good_timer/good_timer_native_plugin.dart';
+import 'package:good_timer/my_native_plugin.dart';
 import 'package:good_timer/providers.dart';
 import 'package:good_timer/settings_page.dart';
+import 'package:good_timer/utils.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'generated/l10n.dart';
@@ -29,7 +30,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   bool isFocusMode = false;
   DateTime? backKeyPressedTime;
   DateTime startedTime = DateTime.now();
-  static DateTime alarmStartedTime = DateTime.now();
 
   @override
   void initState() {
@@ -37,22 +37,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // 풀스크린 만들기
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     if (kDebugMode) {
-      GoodTimerNativePlugin.platformVersion.then((value) => Fluttertoast.showToast(msg: value));
+      MyNativePlugin.platformVersion.then((value) => Fluttertoast.showToast(msg: value));
     }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    MyNativePlugin.cancelAlarm(1); // TODO 타이밍 이슈 있음
     super.dispose();
   }
 
   void _playSound() async {
     if (!PlaySoundProvider.isPlaySound) return;
     if (isFocusMode) {
-      //assetsAudioPlayer.open(Audio("assets/break.wav"));
+      MyNativePlugin.playSound(0);
     } else {
-      //assetsAudioPlayer.open(Audio("assets/focus.wav"));
+      MyNativePlugin.playSound(1);
     }
   }
 
@@ -63,28 +64,27 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   void _onClickStartStopButton() {
     if (_timer == null) {
-      _timer = Timer.periodic(const Duration(seconds: 1), _onTimer);
+      _timer = Timer.periodic(const Duration(milliseconds: 100), _onTimer);
+      Future future = MyNativePlugin.cancelAlarm(1);
+      handleError(future);
       setState(() {
         isFocusMode = true;
         startedTime = DateTime.now();
-        alarmStartedTime = DateTime.now();
+        int rtcTimeMillis = startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
+        Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
+        handleError(future);
       });
       Wakelock.enable();
     } else {
       _timer?.cancel();
       _timer = null;
+      Future future = MyNativePlugin.cancelAlarm(1);
+      handleError(future);
       setState(() {
         isFocusMode = false;
       });
       Wakelock.disable();
     }
-  }
-
-  @pragma('vm:entry-point')
-  static void _onAlarm() {
-    int seconds = DateTime.now().difference(alarmStartedTime).inSeconds;
-    String alarmSeconds = _getTimeText(seconds);
-    Fluttertoast.showToast(msg: "_onAlarm => $alarmSeconds");
   }
 
   void _onTimer(Timer timer) {
@@ -95,7 +95,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       setState(() {
         isFocusMode = !isFocusMode;
         startedTime = DateTime.now();
-        alarmStartedTime = DateTime.now();
+        int rtcTimeMillis = startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
+        Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
+        handleError(future);
       });
     } else {
       setState(() {
