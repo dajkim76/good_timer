@@ -1,5 +1,7 @@
 {
   "appName": "Pomodoro",
+  "ok": "OK",
+  "cancel": "Cancel",
   "settings": "Settings",
   "start": "Start",
   "pause": "Pause",
@@ -10,5 +12,8 @@
   "in_rest" : "Break time :)",
   "playSound": "Play sound",
   "pressAgainToExit": "Press again to exit.",
-  "tasks": "Tasks"
+  "tasks": "Tasks",
+  "add_task": "Add task",
+  "task_name": "Task name",
+  "confirm_deletion": "Are you sure you want to delete it?"
 }

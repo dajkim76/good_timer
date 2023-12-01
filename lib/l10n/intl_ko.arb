@@ -1,5 +1,7 @@
 {
   "appName": "뽀모도로",
+  "ok": "확인",
+  "cancel": "취소",
   "settings": "설정",
   "start": "시작",
   "pause": "일시중지",
@@ -10,5 +12,8 @@
   "in_rest" : "휴식중... ^^",
   "playSound": "소리내기",
   "pressAgainToExit": "종료하려면 한 번 더 누르세요",
-  "tasks": "작업 목록"
+  "tasks": "작업 목록",
+  "add_task": "작업 추가",
+  "task_name": "작업 이름",
+  "confirm_deletion": "정말로 삭제하겠습니까?"
 }

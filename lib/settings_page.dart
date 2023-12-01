@@ -30,7 +30,7 @@ class _SettingsState extends State<SettingsPage> {
                 onToggle: (value) {
                   settingsProvider.save(value);
                 },
-                initialValue: SettingsProvider.isPlaySound,
+                initialValue: settingsProvider.isPlaySound,
                 leading: const Icon(Icons.surround_sound),
                 title: Text(S.of(context).playSound),
               ),

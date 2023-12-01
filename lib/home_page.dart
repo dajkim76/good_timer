@@ -10,6 +10,7 @@ import 'package:good_timer/my_providers.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:good_timer/task_list_drawer.dart';
 import 'package:good_timer/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'generated/l10n.dart';
@@ -56,7 +57,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   void _playSound() async {
-    if (!SettingsProvider.isPlaySound) return;
+    var settings = context.read<SettingsProvider>();
+    if (!settings.isPlaySound) return;
     if (isFocusMode) {
       MyNativePlugin.playSound(0);
     } else {
@@ -174,6 +176,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   String _getModeLabel(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    final taskList = context.watch<TaskListProvider>();
+    var label = taskList.getSelectedTaskName(settings.selectedTaskId);
+    if (label != null) return label;
     if (_timer == null) return S.of(context).ready;
     return isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
   }
