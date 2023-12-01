@@ -77,3 +77,86 @@ class Task extends _Task with RealmEntity, RealmObjectBase, RealmObject {
     ]);
   }
 }
+
+class Pomodoro extends _Pomodoro
+    with RealmEntity, RealmObjectBase, RealmObject {
+  Pomodoro(
+    int id,
+    int todayInt,
+    int taskId,
+    String name,
+    DateTime doneTime,
+    int durationMinutes, {
+    String? memo,
+  }) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'todayInt', todayInt);
+    RealmObjectBase.set(this, 'taskId', taskId);
+    RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'doneTime', doneTime);
+    RealmObjectBase.set(this, 'durationMinutes', durationMinutes);
+    RealmObjectBase.set(this, 'memo', memo);
+  }
+
+  Pomodoro._();
+
+  @override
+  int get id => RealmObjectBase.get<int>(this, 'id') as int;
+  @override
+  set id(int value) => throw RealmUnsupportedSetError();
+
+  @override
+  int get todayInt => RealmObjectBase.get<int>(this, 'todayInt') as int;
+  @override
+  set todayInt(int value) => throw RealmUnsupportedSetError();
+
+  @override
+  int get taskId => RealmObjectBase.get<int>(this, 'taskId') as int;
+  @override
+  set taskId(int value) => throw RealmUnsupportedSetError();
+
+  @override
+  String get name => RealmObjectBase.get<String>(this, 'name') as String;
+  @override
+  set name(String value) => throw RealmUnsupportedSetError();
+
+  @override
+  DateTime get doneTime =>
+      RealmObjectBase.get<DateTime>(this, 'doneTime') as DateTime;
+  @override
+  set doneTime(DateTime value) => RealmObjectBase.set(this, 'doneTime', value);
+
+  @override
+  int get durationMinutes =>
+      RealmObjectBase.get<int>(this, 'durationMinutes') as int;
+  @override
+  set durationMinutes(int value) =>
+      RealmObjectBase.set(this, 'durationMinutes', value);
+
+  @override
+  String? get memo => RealmObjectBase.get<String>(this, 'memo') as String?;
+  @override
+  set memo(String? value) => RealmObjectBase.set(this, 'memo', value);
+
+  @override
+  Stream<RealmObjectChanges<Pomodoro>> get changes =>
+      RealmObjectBase.getChanges<Pomodoro>(this);
+
+  @override
+  Pomodoro freeze() => RealmObjectBase.freezeObject<Pomodoro>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(Pomodoro._);
+    return const SchemaObject(ObjectType.realmObject, Pomodoro, 'Pomodoro', [
+      SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
+      SchemaProperty('todayInt', RealmPropertyType.int),
+      SchemaProperty('taskId', RealmPropertyType.int),
+      SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('doneTime', RealmPropertyType.timestamp),
+      SchemaProperty('durationMinutes', RealmPropertyType.int),
+      SchemaProperty('memo', RealmPropertyType.string, optional: true),
+    ]);
+  }
+}

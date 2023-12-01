@@ -15,5 +15,6 @@
   "tasks": "작업 목록",
   "add_task": "작업 추가",
   "task_name": "작업 이름",
-  "confirm_deletion": "정말로 삭제하겠습니까?"
+  "confirm_deletion": "정말로 삭제하겠습니까?",
+  "pomodoro_count": "뽀모도로 개수"
 }

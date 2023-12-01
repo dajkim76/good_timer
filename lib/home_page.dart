@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'generated/l10n.dart';
+import 'pomodoro_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -138,6 +139,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     if (remainSeconds <= 0) {
       _playSound();
       setState(() {
+        if (isFocusMode) {
+          var taskListProvider = context.read<TaskListProvider>();
+          var settingsProvider = context.read<SettingsProvider>();
+          taskListProvider.addPomodoro(settingsProvider.selectedTaskId, 25);
+        }
         isFocusMode = !isFocusMode;
         startedTime = DateTime.now();
         timerDuration = Duration.zero;
@@ -179,6 +185,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     final settings = context.watch<SettingsProvider>();
     final taskList = context.watch<TaskListProvider>();
     var label = taskList.getSelectedTaskName(settings.selectedTaskId);
+    if (_timer != null && !isFocusMode) return S.of(context).in_rest;
     if (label != null) return label;
     if (_timer == null) return S.of(context).ready;
     return isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
@@ -192,6 +199,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void _onClickSettings() {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => const SettingsPage(),
+    ));
+  }
+
+  void _onClickPomodoro() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const PomodoroPage(),
     ));
   }
 
@@ -284,6 +297,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   _key.currentState?.openEndDrawer();
                 },
                 tooltip: S.of(context).tasks,
+              ),
+              IconButton(
+                icon: const Icon(Icons.history),
+                onPressed: _onClickPomodoro,
+                tooltip: S.of(context).pomodoro_count,
               ),
               IconButton(
                 icon: const Icon(Icons.settings),

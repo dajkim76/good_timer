@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_timer/realm_models.dart';
+import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,12 +40,14 @@ class SettingsProvider with ChangeNotifier {
 
 class TaskListProvider with ChangeNotifier {
   late List<Task> _taskList;
+  List<Pomodoro>? _pomodoroList;
 
   late Realm realm;
   List<Task> get taskList => _taskList;
+  List<Pomodoro> get pomodoroList => _pomodoroList ?? [];
 
   TaskListProvider() {
-    var config = Configuration.local([Task.schema], schemaVersion: 1);
+    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 1);
     realm = Realm(config);
 
     var allTasks = realm.all<Task>();
@@ -56,6 +59,7 @@ class TaskListProvider with ChangeNotifier {
     }
 
     _taskList = realm.all<Task>().toList();
+    loadPomodoro();
     notifyListeners();
   }
 
@@ -76,6 +80,35 @@ class TaskListProvider with ChangeNotifier {
     var task = _taskList.firstWhere((element) => element.id == taskId);
     realm.write(() => realm.delete<Task>(task));
     _taskList.remove(task);
+    notifyListeners();
+  }
+
+  void addPomodoro(int taskId, int durationMinutes) {
+    String taskName = getSelectedTaskName(taskId) ?? "";
+    if (taskName.isEmpty) {
+      taskId = -1;
+      taskName = "No name";
+    }
+    realm.write(() {
+      var now = DateTime.now();
+      String todayStr = DateFormat('yyyyMMdd').format(now);
+      realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, durationMinutes));
+    });
+
+    loadPomodoro();
+    notifyListeners();
+  }
+
+  void loadPomodoro() {
+    var now = DateTime.now();
+    String todayStr = DateFormat('yyyyMMdd').format(now);
+    _pomodoroList?.clear();
+    _pomodoroList = realm.all<Pomodoro>().query("todayInt == \$0", [int.parse(todayStr)]).toList();
+  }
+
+  void clearPomodoro() {
+    realm.write(() => realm.deleteAll<Pomodoro>());
+    loadPomodoro();
     notifyListeners();
   }
 }

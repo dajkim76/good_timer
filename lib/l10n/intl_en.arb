@@ -15,5 +15,6 @@
   "tasks": "Tasks",
   "add_task": "Add task",
   "task_name": "Task name",
-  "confirm_deletion": "Are you sure you want to delete it?"
+  "confirm_deletion": "Are you sure you want to delete it?",
+  "pomodoro_count": "Pomodoro count"
 }

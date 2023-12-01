@@ -44,6 +44,7 @@ dependencies:
   intl: any
   fluttertoast: ^8.2.4
   realm: ^1.6.1
+  sprintf: ^7.0.0
 
 dev_dependencies:
   flutter_test:
