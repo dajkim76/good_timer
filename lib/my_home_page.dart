@@ -65,8 +65,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void _onClickStartStopButton() {
     if (_timer == null) {
       _timer = Timer.periodic(const Duration(milliseconds: 100), _onTimer);
-      Future future = MyNativePlugin.cancelAlarm(1);
-      handleError(future);
+      MyNativePlugin.cancelAlarm(1);
       setState(() {
         isFocusMode = true;
         startedTime = DateTime.now();

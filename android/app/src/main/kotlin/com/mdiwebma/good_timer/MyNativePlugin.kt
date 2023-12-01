@@ -94,7 +94,7 @@ class GoodTimerNativePlugin: FlutterPlugin, MethodCallHandler {
     private fun getPendingIntent(id: Int, wakeUp: Boolean): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java)
             .putExtra("extra_id", id)
-            .putExtra("extra_wake_up", wakeUp)
+            .putExtra("extra_wakeUp", wakeUp)
 
         return PendingIntent.getBroadcast(context, id, intent, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0 )
     }
@@ -118,6 +118,7 @@ class GoodTimerNativePlugin: FlutterPlugin, MethodCallHandler {
     }
 
     private fun playSound(id: Int): Boolean {
+        wakeUpScreen2(context, true)
         if (id == 0) {
             val player: MediaPlayer = focusPlayer ?: MediaPlayer.create(context, R.raw.focus).also {
                 focusPlayer = it
@@ -139,20 +140,54 @@ class GoodTimerNativePlugin: FlutterPlugin, MethodCallHandler {
         const val TAG = "GoodTimerNativePlugin"
 
         fun onReceiveAlarm(context: Context, intent: Intent) {
-            val wakeUp = intent.getBooleanExtra("extra_wake_up", false)
+            val wakeUp = intent.getBooleanExtra("extra_wakeUp", false)
             Log.d(TAG, "onReceiveAlarm: wakeUp=$wakeUp")
-            Toast.makeText(context, "onReceiverAlarm wakeUp=$wakeUp", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "onReceiverAlarm wakeUp=$wakeUp", Toast.LENGTH_SHORT).show()
             if (wakeUp) {
-                val powerManager: PowerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-                if (!powerManager.isScreenOn()) {
-                    val wakeLock: PowerManager.WakeLock = powerManager.newWakeLock(
-                        PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                        context.packageName
-                    )
-                    wakeLock.acquire(10*60*1000L /*10 minutes*/)
-                    wakeLock.release()
-                }
+                wakeUpScreen2(context, true)
+            } else {
+                bringAppToForeground(context)
             }
+        }
+
+        fun wakeUpScreen(context: Context) {
+            val powerManager: PowerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!powerManager.isScreenOn()) {
+                val wakeLock: PowerManager.WakeLock = powerManager.newWakeLock(
+                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    context.packageName
+                )
+                wakeLock.acquire(10*60*1000L /*10 minutes*/)
+                wakeLock.release()
+            }
+        }
+
+        fun wakeUpScreen2(context: Context, bringAppToForeground: Boolean) {
+            val powerManager: PowerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+            val wakeLock: PowerManager.WakeLock = powerManager.newWakeLock(
+                PowerManager.FULL_WAKE_LOCK or
+                    PowerManager.ACQUIRE_CAUSES_WAKEUP or
+                    PowerManager.ON_AFTER_RELEASE, "AlarmBroadcastReceiver:MyWakeLock"
+            )
+            wakeLock.acquire(3 * 60 * 1000L /*3 minutes*/)
+            if (bringAppToForeground) bringAppToForeground(context)
+            wakeLock.release();
+        }
+
+        fun bringAppToForeground(context: Context) : Boolean {
+            try {
+                val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+                intent!!.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                context.startActivity(intent)
+                return true
+            }catch (ex: Exception) {
+                showErrorToast(context, ex)
+                return false
+            }
+        }
+
+        fun showErrorToast(context: Context, ex: Exception) {
+            Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show()
         }
     }
 }
