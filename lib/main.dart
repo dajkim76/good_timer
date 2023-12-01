@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:good_timer/providers.dart';
+import 'package:good_timer/my_providers.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
-import 'my_home_page.dart';
+import 'home_page.dart';
 
 void main() {
   runApp(
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => TaskListProvider()),
-      ChangeNotifierProvider(create: (_) => PlaySoundProvider())
+      ChangeNotifierProvider(create: (_) => SettingsProvider())
     ], child: const MyApp()),
   );
 }

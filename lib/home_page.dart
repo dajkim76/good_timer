@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:good_timer/my_native_plugin.dart';
-import 'package:good_timer/providers.dart';
+import 'package:good_timer/my_providers.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:good_timer/task_list_drawer.dart';
 import 'package:good_timer/utils.dart';
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   void _playSound() async {
-    if (!PlaySoundProvider.isPlaySound) return;
+    if (!SettingsProvider.isPlaySound) return;
     if (isFocusMode) {
       MyNativePlugin.playSound(0);
     } else {

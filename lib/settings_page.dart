@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:good_timer/providers.dart';
+import 'package:good_timer/my_providers.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -15,7 +15,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    final playSoundProvider = Provider.of<PlaySoundProvider>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,9 +28,9 @@ class _SettingsState extends State<SettingsPage> {
             SettingsSection(title: null, tiles: <SettingsTile>[
               SettingsTile.switchTile(
                 onToggle: (value) {
-                  playSoundProvider.save(value);
+                  settingsProvider.save(value);
                 },
-                initialValue: PlaySoundProvider.isPlaySound,
+                initialValue: SettingsProvider.isPlaySound,
                 leading: const Icon(Icons.surround_sound),
                 title: Text(S.of(context).playSound),
               ),
