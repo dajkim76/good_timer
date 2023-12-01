@@ -1,7 +1,10 @@
 {
   "appName": "뽀모도로",
   "settings": "설정",
-  "tooltip_start_stop": "시작 / 종료",
+  "start": "시작",
+  "pause": "일시중지",
+  "resume": "다시 시작",
+  "reset": "리셋",
   "ready" : "준비",
   "be_focus": "업무에 집중하세요~",
   "in_rest" : "휴식중... ^^",

@@ -1,7 +1,10 @@
 {
   "appName": "Pomodoro",
   "settings": "Settings",
-  "tooltip_start_stop": "Start / Stop",
+  "start": "Start",
+  "pause": "Pause",
+  "resume": "Resume",
+  "reset": "Reset",
   "ready" : "Ready~",
   "be_focus": "Be focus",
   "in_rest" : "Break time :)",

@@ -23,13 +23,17 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+enum TimerState { stop, play, pause }
+
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   Timer? _timer;
-  static const int kFocusSeconds = kDebugMode ? 10 : 5 * 60;
-  static const int kBreakSeconds = kDebugMode ? 5 : 1 * 60;
+  static const int kFocusSeconds = kDebugMode ? 10 : 25 * 60;
+  static const int kBreakSeconds = kDebugMode ? 5 : 5 * 60;
   bool isFocusMode = false;
   DateTime? backKeyPressedTime;
   DateTime startedTime = DateTime.now();
+  Duration timerDuration = Duration.zero;
+  TimerState timerState = TimerState.stop;
 
   @override
   void initState() {
@@ -62,11 +66,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return isFocusMode ? kFocusSeconds : kBreakSeconds;
   }
 
-  void _onClickStartStopButton() {
+  void _onClickStart() {
+    assert(_timer == null);
     if (_timer == null) {
       _timer = Timer.periodic(const Duration(milliseconds: 100), _onTimer);
       MyNativePlugin.cancelAlarm(1);
       setState(() {
+        timerState = TimerState.play;
+        timerDuration = Duration.zero;
         isFocusMode = true;
         startedTime = DateTime.now();
         int rtcTimeMillis = startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
@@ -74,12 +81,44 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         handleError(future);
       });
       Wakelock.enable();
-    } else {
+    }
+  }
+
+  void _onClickPause() {
+    assert(_timer != null);
+    setState(() {
+      timerState = TimerState.pause;
+      timerDuration = timerDuration + DateTime.now().difference(startedTime);
+      startedTime = DateTime.now();
+    });
+    Future future = MyNativePlugin.cancelAlarm(1);
+    handleError(future);
+    Wakelock.disable();
+  }
+
+  void _onClickResume() {
+    assert(_timer != null);
+    setState(() {
+      timerState = TimerState.play;
+      startedTime = DateTime.now();
+
+      Duration remainDuration = Duration(seconds: _getModeSeconds()) - timerDuration;
+      int rtcTimeMillis = startedTime.add(remainDuration).millisecondsSinceEpoch;
+      Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
+      handleError(future);
+    });
+    Wakelock.enable();
+  }
+
+  void _onClickReset() {
+    assert(_timer != null);
+    if (_timer != null) {
       _timer?.cancel();
       _timer = null;
       Future future = MyNativePlugin.cancelAlarm(1);
       handleError(future);
       setState(() {
+        timerState = TimerState.stop;
         isFocusMode = false;
       });
       Wakelock.disable();
@@ -87,13 +126,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   void _onTimer(Timer timer) {
+    if (timerState != TimerState.play) return;
+
     DateTime now = DateTime.now();
-    int remainSeconds = _getModeSeconds() - now.difference(startedTime).inSeconds;
+    int remainSeconds = _getModeSeconds() - (timerDuration + now.difference(startedTime)).inSeconds;
     if (remainSeconds <= 0) {
       _playSound();
       setState(() {
         isFocusMode = !isFocusMode;
         startedTime = DateTime.now();
+        timerDuration = Duration.zero;
         int rtcTimeMillis = startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
@@ -108,8 +150,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   String _getRemainTimeText() {
     int remainSeconds;
     if (_timer != null) {
-      DateTime now = DateTime.now();
-      remainSeconds = _getModeSeconds() - now.difference(startedTime).inSeconds;
+      if (timerState == TimerState.pause) {
+        remainSeconds = _getModeSeconds() - timerDuration.inSeconds;
+      } else {
+        DateTime now = DateTime.now();
+        remainSeconds = _getModeSeconds() - (timerDuration + now.difference(startedTime)).inSeconds;
+      }
     } else {
       remainSeconds = _getModeSeconds();
     }
@@ -138,6 +184,61 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => const SettingsPage(),
     ));
+  }
+
+  List<Widget> _buildButtons(BuildContext context) {
+    const kSize = 80.0;
+    const kColor = Colors.white;
+
+    List<Widget> buttons = <Widget>[];
+    if (_timer == null) {
+      buttons.add(IconButton(
+        // start
+        icon: const Icon(
+          Icons.play_circle_rounded,
+          size: kSize,
+          color: kColor,
+        ),
+        onPressed: _onClickStart,
+        tooltip: S.of(context).start,
+      ));
+    } else {
+      if (timerState == TimerState.play) {
+        // pause
+        buttons.add(IconButton(
+          icon: const Icon(
+            Icons.pause_circle_rounded,
+            size: kSize,
+            color: kColor,
+          ),
+          onPressed: _onClickPause,
+          tooltip: S.of(context).pause,
+        ));
+      } else if (timerState == TimerState.pause) {
+        // resume
+        buttons.add(IconButton(
+          icon: const Icon(
+            Icons.not_started_rounded,
+            size: kSize,
+            color: kColor,
+          ),
+          onPressed: _onClickResume,
+          tooltip: S.of(context).resume,
+        ));
+      }
+
+      // reset
+      buttons.add(IconButton(
+        icon: const Icon(
+          Icons.stop_circle_rounded,
+          size: kSize,
+          color: kColor,
+        ),
+        onPressed: _onClickReset,
+        tooltip: S.of(context).reset,
+      ));
+    }
+    return buttons;
   }
 
   @override
@@ -201,15 +302,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   _getRemainTimeText(),
                   style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: _buildButtons(context),
+                )
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.blueGrey,
-            onPressed: _onClickStartStopButton,
-            tooltip: S.of(context).tooltip_start_stop,
-            child: Icon(_timer == null ? Icons.not_started_outlined : Icons.stop_circle_outlined),
-          ), // This trailing comma makes auto-formatting nicer for build methods.
         ),
         onWillPop: () {
           if (_timer == null) return Future.value(true);
