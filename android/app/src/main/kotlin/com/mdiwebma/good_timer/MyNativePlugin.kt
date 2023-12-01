@@ -18,7 +18,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-class GoodTimerNativePlugin: FlutterPlugin, MethodCallHandler {
+class MyNativePlugin: FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
     private lateinit var channel : MethodChannel
     private var focusPlayer: MediaPlayer? = null
@@ -174,6 +174,7 @@ class GoodTimerNativePlugin: FlutterPlugin, MethodCallHandler {
             wakeLock.release();
         }
 
+        // FIXME NOT WORKING
         fun bringAppToForeground(context: Context) : Boolean {
             try {
                 val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
