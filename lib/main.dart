@@ -8,7 +8,10 @@ import 'my_home_page.dart';
 
 void main() {
   runApp(
-    MultiProvider(providers: [ChangeNotifierProvider(create: (_) => PlaySoundProvider())], child: const MyApp()),
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => TaskListProvider()),
+      ChangeNotifierProvider(create: (_) => PlaySoundProvider())
+    ], child: const MyApp()),
   );
 }
 

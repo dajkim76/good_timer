@@ -9,5 +9,6 @@
   "be_focus": "Be focus",
   "in_rest" : "Break time :)",
   "playSound": "Play sound",
-  "pressAgainToExit": "Press again to exit."
+  "pressAgainToExit": "Press again to exit.",
+  "tasks": "Tasks"
 }

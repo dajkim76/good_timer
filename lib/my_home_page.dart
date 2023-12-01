@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:good_timer/my_native_plugin.dart';
 import 'package:good_timer/providers.dart';
 import 'package:good_timer/settings_page.dart';
+import 'package:good_timer/task_list_drawer.dart';
 import 'package:good_timer/utils.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -34,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   DateTime startedTime = DateTime.now();
   Duration timerDuration = Duration.zero;
   TimerState timerState = TimerState.stop;
+  final GlobalKey<ScaffoldState> _key = GlobalKey(); // for open drawer
 
   @override
   void initState() {
@@ -251,6 +254,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // than having to individually change instances of widgets.
     return WillPopScope(
         child: Scaffold(
+          key: _key,
           appBar: AppBar(
             // TRY THIS: Try changing the color here to a specific color (to
             // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
@@ -268,6 +272,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
             actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.list),
+                onPressed: () {
+                  _key.currentState?.openEndDrawer();
+                },
+                tooltip: S.of(context).tasks,
+              ),
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: _onClickSettings,
@@ -309,6 +320,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ],
             ),
           ),
+          endDrawer: const TaskListDrawer(),
+          drawerDragStartBehavior: DragStartBehavior.start,
         ),
         onWillPop: () {
           if (_timer == null) return Future.value(true);
