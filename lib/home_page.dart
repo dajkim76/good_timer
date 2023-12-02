@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Duration timerDuration = Duration.zero;
   TimerState timerState = TimerState.stop;
   final GlobalKey<ScaffoldState> _key = GlobalKey(); // for open drawer
+  final ValueNotifier<int> remainSecondsNotifier = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -83,7 +84,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         timerDuration = Duration.zero;
         isFocusMode = true;
         startedTime = DateTime.now();
-        int rtcTimeMillis = startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
+        final remainSeconds = _getModeSeconds();
+        remainSecondsNotifier.value = remainSeconds;
+        int rtcTimeMillis = startedTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
       });
@@ -108,7 +111,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     setState(() {
       timerState = TimerState.play;
       startedTime = DateTime.now();
-
       Duration remainDuration = Duration(seconds: _getModeSeconds()) - timerDuration;
       int rtcTimeMillis = startedTime.add(remainDuration).millisecondsSinceEpoch;
       Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
@@ -125,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       Future future = MyNativePlugin.cancelAlarm(1);
       handleError(future);
       setState(() {
+        remainSecondsNotifier.value = _getModeSeconds();
         timerState = TimerState.stop;
         isFocusMode = false;
       });
@@ -155,6 +158,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     } else {
       setState(() {
         // update Ui
+        remainSecondsNotifier.value = remainSeconds;
+        print("remainSeconds=$remainSeconds");
       });
     }
   }
@@ -339,8 +344,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 //   style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
                 // ),
                 CustomPaint(
-                  size: MediaQuery.of(context).size / 3,
-                  painter: ClockDialPainter(),
+                  size: Size(MediaQuery.of(context).size.height / 3, MediaQuery.of(context).size.height / 3),
+                  painter: ClockDialPainter(remainSecondsNotifier),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
