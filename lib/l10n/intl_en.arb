@@ -16,5 +16,7 @@
   "add_task": "Add task",
   "task_name": "Task name",
   "confirm_deletion": "Are you sure you want to delete it?",
-  "pomodoro_count": "Pomodoro count"
+  "pomodoro_count": "Pomodoro count",
+  "show_analog_clock":"Show analog clock",
+  "delete_all": "Delete all"
 }

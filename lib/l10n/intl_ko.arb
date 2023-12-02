@@ -16,5 +16,7 @@
   "add_task": "작업 추가",
   "task_name": "작업 이름",
   "confirm_deletion": "정말로 삭제하겠습니까?",
-  "pomodoro_count": "뽀모도로 개수"
+  "pomodoro_count": "뽀모도로 개수",
+  "show_analog_clock":"아날로그 시계 보기",
+  "delete_all": "모두 삭제"
 }

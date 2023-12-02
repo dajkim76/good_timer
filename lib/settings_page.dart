@@ -34,6 +34,14 @@ class _SettingsState extends State<SettingsPage> {
                 leading: const Icon(Icons.surround_sound),
                 title: Text(S.of(context).playSound),
               ),
+              SettingsTile.switchTile(
+                onToggle: (value) {
+                  settingsProvider.setAnalogClock(value);
+                },
+                initialValue: settingsProvider.isAnalogClock,
+                leading: const Icon(Icons.alarm),
+                title: Text(S.of(context).show_analog_clock),
+              )
             ])
           ],
           lightTheme: const SettingsThemeData(

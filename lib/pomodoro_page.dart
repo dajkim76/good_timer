@@ -20,19 +20,19 @@ class PomodoroPage extends StatelessWidget {
               onPressed: () {
                 taskListProvider.clearPomodoro();
               },
-              tooltip: S.of(context).tasks,
+              tooltip: S.of(context).delete_all,
             )
           ],
         ),
         body: Padding(
-            padding: EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(5.0),
             child: ListView.builder(
                 itemCount: taskListProvider.pomodoroList.length,
                 itemBuilder: (context, index) => ListTile(
                       leading: getIcon(index),
                       title: Text(
                         taskListProvider.pomodoroList[index].name,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                       subtitle: Text(DateFormat('yyyy-MM-dd HH:mm')
                           .format(taskListProvider.pomodoroList[index].doneTime.toLocal())),

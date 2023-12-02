@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
@@ -10,9 +10,11 @@ class SettingsProvider with ChangeNotifier {
 
   bool _isPlaySound = true;
   int _selectedTaskId = 0;
+  bool _isAnalogClock = false;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
+  bool get isAnalogClock => _isAnalogClock;
 
   SettingsProvider() {
     loadFromSharedPref();
@@ -21,6 +23,7 @@ class SettingsProvider with ChangeNotifier {
   Future<void> loadFromSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     _isPlaySound = _sharedPreferences.getBool("isPlaySound") ?? true;
+    _isAnalogClock = _sharedPreferences.getBool("isAnalogClock") ?? false;
     _selectedTaskId = _sharedPreferences.getInt("selectedTaskId") ?? 0;
     notifyListeners();
   }
@@ -28,6 +31,12 @@ class SettingsProvider with ChangeNotifier {
   void save(bool isPlaySound) {
     _isPlaySound = isPlaySound;
     _sharedPreferences.setBool("isPlaySound", isPlaySound);
+    notifyListeners();
+  }
+
+  void setAnalogClock(bool isAnalogClock) {
+    _isAnalogClock = isAnalogClock;
+    _sharedPreferences.setBool("isAnalogClock", isAnalogClock);
     notifyListeners();
   }
 
@@ -51,7 +60,7 @@ class TaskListProvider with ChangeNotifier {
     realm = Realm(config);
 
     var allTasks = realm.all<Task>();
-    if (allTasks.isEmpty) {
+    if (kDebugMode && allTasks.isEmpty) {
       realm.write(() {
         realm.add(Task(DateTime.now().millisecondsSinceEpoch, "Test task #1"));
         realm.add(Task(DateTime.now().millisecondsSinceEpoch + 1, "Test task #2"));

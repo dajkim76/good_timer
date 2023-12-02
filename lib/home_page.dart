@@ -271,6 +271,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -333,20 +334,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
               // action in the IDE, or press "p" in the console), to see the
               // wireframe for each widget.
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Text(
                   _getModeLabel(context),
                   style: TextStyle(color: _getModeLabelColor(), fontSize: 40),
                 ),
-                // Text(
-                //   _getRemainTimeText(),
-                //   style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
-                // ),
-                CustomPaint(
-                  size: Size(MediaQuery.of(context).size.height / 3, MediaQuery.of(context).size.height / 3),
-                  painter: ClockDialPainter(remainSecondsNotifier),
-                ),
+                !settings.isAnalogClock
+                    ? Text(
+                        _getRemainTimeText(),
+                        style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
+                      )
+                    : CustomPaint(
+                        size: Size(MediaQuery.of(context).size.height / 3, MediaQuery.of(context).size.height / 3),
+                        painter: ClockDialPainter(remainSecondsNotifier),
+                      ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: _buildButtons(context),
