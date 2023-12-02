@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     if (kDebugMode) {
       MyNativePlugin.platformVersion.then((value) => Fluttertoast.showToast(msg: value));
     }
+    remainSecondsNotifier.value = _getModeSeconds();
   }
 
   @override
@@ -338,7 +339,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               children: <Widget>[
                 Text(
                   _getModeLabel(context),
-                  style: TextStyle(color: _getModeLabelColor(), fontSize: 40),
+                  textAlign: TextAlign.center,
+                  maxLines: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 1,
+                  style: TextStyle(color: _getModeLabelColor(), fontSize: 40, fontWeight: FontWeight.bold),
                 ),
                 !settings.isAnalogClock
                     ? Text(

@@ -18,5 +18,8 @@
   "confirm_deletion": "Are you sure you want to delete it?",
   "pomodoro_count": "Pomodoro count",
   "show_analog_clock":"Show analog clock",
-  "delete_all": "Delete all"
+  "delete_all": "Delete all",
+  "delete": "Delete",
+  "rename": "Rename",
+  "empty_data": "Empty data"
 }

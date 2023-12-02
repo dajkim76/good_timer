@@ -18,5 +18,8 @@
   "confirm_deletion": "정말로 삭제하겠습니까?",
   "pomodoro_count": "뽀모도로 개수",
   "show_analog_clock":"아날로그 시계 보기",
-  "delete_all": "모두 삭제"
+  "delete_all": "모두 삭제",
+  "delete": "삭제",
+  "rename": "이름 변경",
+  "empty_data": "데이타가 없습니다"
 }

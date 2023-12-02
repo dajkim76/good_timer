@@ -10,7 +10,7 @@ class SettingsProvider with ChangeNotifier {
 
   bool _isPlaySound = true;
   int _selectedTaskId = 0;
-  bool _isAnalogClock = false;
+  bool _isAnalogClock = true;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
@@ -23,7 +23,7 @@ class SettingsProvider with ChangeNotifier {
   Future<void> loadFromSharedPref() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     _isPlaySound = _sharedPreferences.getBool("isPlaySound") ?? true;
-    _isAnalogClock = _sharedPreferences.getBool("isAnalogClock") ?? false;
+    _isAnalogClock = _sharedPreferences.getBool("isAnalogClock") ?? true;
     _selectedTaskId = _sharedPreferences.getInt("selectedTaskId") ?? 0;
     notifyListeners();
   }
@@ -83,6 +83,16 @@ class TaskListProvider with ChangeNotifier {
     });
     _taskList.add(newTask);
     notifyListeners();
+  }
+
+  void updateTask(int id, String name) {
+    final task = _taskList.firstWhere((element) => element.id == id);
+    if (task != null) {
+      realm.write(() {
+        task.name = name;
+      });
+      notifyListeners();
+    }
   }
 
   void deleteTask(int taskId) {

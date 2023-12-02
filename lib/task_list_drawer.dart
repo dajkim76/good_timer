@@ -20,32 +20,54 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
     var settings = Provider.of<SettingsProvider>(context);
 
     return Container(
-      width: MediaQuery.of(context).size.width / 2,
+      width: MediaQuery.of(context).size.width * 2 / 3,
       color: Colors.white,
       padding: EdgeInsets.fromLTRB(20, 20, 10, 10),
       child: Column(
         children: [
-          OutlinedButton(
+          ElevatedButton.icon(
               onPressed: () {
                 onClickAddTask(context);
               },
-              child: Text(S.of(context).add_task)),
-          Expanded(
-              child: ListView.builder(
-            itemCount: taskListProvider.taskList.length,
-            itemBuilder: (context, index) => ListTile(
-              visualDensity: const VisualDensity(vertical: -4),
-              title: Text(taskListProvider.taskList[index].name),
-              contentPadding: const EdgeInsets.all(0),
-              onTap: () {
-                settings.setSelectedTaskId(taskListProvider.taskList[index].id);
-                Scaffold.of(context).closeEndDrawer();
-              },
-              onLongPress: () {
-                onLongClickTask(context, taskListProvider.taskList[index].id);
-              },
-            ),
-          ))
+              icon: const Icon(Icons.add),
+              label: Text(S.of(context).add_task)),
+          taskListProvider.taskList.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+                  child: Text(
+                    S.of(context).empty_data,
+                  ),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: taskListProvider.taskList.length,
+                      itemBuilder: (context, index) => ListTile(
+                            visualDensity: const VisualDensity(vertical: -4),
+                            title: Text(taskListProvider.taskList[index].name),
+                            contentPadding: const EdgeInsets.all(0),
+                            onTap: () {
+                              settings.setSelectedTaskId(taskListProvider.taskList[index].id);
+                              Scaffold.of(context).closeEndDrawer();
+                            },
+                            trailing: PopupMenuButton<int>(
+                              onSelected: (int menuIndex) {
+                                if (menuIndex == 0) onClickRename(context, taskListProvider.taskList[index].id);
+                                if (menuIndex == 1) onClickDelete(context, taskListProvider.taskList[index].id);
+                              },
+                              itemBuilder: (BuildContext context) {
+                                return [
+                                  PopupMenuItem(
+                                    value: 0,
+                                    child: Text(S.of(context).rename),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Text(S.of(context).delete),
+                                  )
+                                ];
+                              },
+                            ),
+                          )))
         ],
       ),
     );
@@ -59,23 +81,24 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
     }
   }
 
-  Future<String?> _showTextInputDialog(BuildContext context) async {
-    final textFieldController = TextEditingController();
+  Future<String?> _showTextInputDialog(BuildContext context, {String text = ""}) async {
+    final textFieldController = TextEditingController()..text = text;
 
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             title: Text(S.of(context).task_name),
             content: TextField(
               controller: textFieldController,
             ),
             actions: <Widget>[
-              ElevatedButton(
+              TextButton(
                 child: Text(S.of(context).cancel),
                 onPressed: () => Navigator.pop(context),
               ),
-              ElevatedButton(
+              TextButton(
                 child: Text(S.of(context).ok),
                 onPressed: () => Navigator.pop(context, textFieldController.text),
               ),
@@ -84,7 +107,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
         });
   }
 
-  void onLongClickTask(BuildContext context, int taskId) async {
+  void onClickDelete(BuildContext context, int taskId) async {
     var taskListProvider = context.read<TaskListProvider>();
     var taskName = taskListProvider.getSelectedTaskName(taskId) ?? "NO NAME";
 
@@ -92,14 +115,15 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             title: Text(taskName),
             content: Text(S.of(context).confirm_deletion),
             actions: <Widget>[
-              ElevatedButton(
+              TextButton(
                 child: Text(S.of(context).cancel),
                 onPressed: () => Navigator.pop(context),
               ),
-              ElevatedButton(
+              TextButton(
                 child: Text(S.of(context).ok),
                 onPressed: () {
                   taskListProvider.deleteTask(taskId);
@@ -109,5 +133,14 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
             ],
           );
         });
+  }
+
+  void onClickRename(BuildContext context, int taskId) async {
+    var taskListProvider = context.read<TaskListProvider>();
+    var taskName = taskListProvider.getSelectedTaskName(taskId) ?? "NO NAME";
+    var newName = await _showTextInputDialog(context, text: taskName);
+    if (newName?.isNotEmpty == true) {
+      taskListProvider.updateTask(taskId, newName!);
+    }
   }
 }
