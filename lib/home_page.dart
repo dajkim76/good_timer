@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:good_timer/clock_dial_painter.dart';
 import 'package:good_timer/my_native_plugin.dart';
 import 'package:good_timer/my_providers.dart';
 import 'package:good_timer/settings_page.dart';
@@ -182,10 +183,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   String _getModeLabel(BuildContext context) {
+    if (_timer != null && !isFocusMode) return S.of(context).in_rest;
     final settings = context.watch<SettingsProvider>();
     final taskList = context.watch<TaskListProvider>();
     var label = taskList.getSelectedTaskName(settings.selectedTaskId);
-    if (_timer != null && !isFocusMode) return S.of(context).in_rest;
     if (label != null) return label;
     if (_timer == null) return S.of(context).ready;
     return isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
@@ -299,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 tooltip: S.of(context).tasks,
               ),
               IconButton(
-                icon: const Icon(Icons.history),
+                icon: const Icon(Icons.alarm_on),
                 onPressed: _onClickPomodoro,
                 tooltip: S.of(context).pomodoro_count,
               ),
@@ -333,9 +334,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   _getModeLabel(context),
                   style: TextStyle(color: _getModeLabelColor(), fontSize: 40),
                 ),
-                Text(
-                  _getRemainTimeText(),
-                  style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
+                // Text(
+                //   _getRemainTimeText(),
+                //   style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
+                // ),
+                CustomPaint(
+                  size: MediaQuery.of(context).size / 3,
+                  painter: ClockDialPainter(),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
