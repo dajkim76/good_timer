@@ -23,8 +23,9 @@ class _Pomodoro {
   late final int id;
   late final int todayInt; // 20230601
   late final int taskId;
-  late final String name;
+  late final String taskName;
   late DateTime doneTime;
   late int durationMinutes;
   String? memo;
+  String? extra;
 }

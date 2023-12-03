@@ -19,7 +19,10 @@
   "pomodoro_count": "Pomodoro count",
   "show_analog_clock":"Show analog clock",
   "delete_all": "Delete all",
+  "confirm_deletion_all": "Are you sure you want to delete all?",
   "delete": "Delete",
   "rename": "Rename",
-  "empty_data": "Empty data"
+  "empty_data": "Empty data",
+  "memo": "Memo",
+  "pomodoro_count_fmt": "{count} Pomodoro(s)"
 }

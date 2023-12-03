@@ -84,18 +84,20 @@ class Pomodoro extends _Pomodoro
     int id,
     int todayInt,
     int taskId,
-    String name,
+    String taskName,
     DateTime doneTime,
     int durationMinutes, {
     String? memo,
+    String? extra,
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'todayInt', todayInt);
     RealmObjectBase.set(this, 'taskId', taskId);
-    RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'taskName', taskName);
     RealmObjectBase.set(this, 'doneTime', doneTime);
     RealmObjectBase.set(this, 'durationMinutes', durationMinutes);
     RealmObjectBase.set(this, 'memo', memo);
+    RealmObjectBase.set(this, 'extra', extra);
   }
 
   Pomodoro._();
@@ -116,9 +118,10 @@ class Pomodoro extends _Pomodoro
   set taskId(int value) => throw RealmUnsupportedSetError();
 
   @override
-  String get name => RealmObjectBase.get<String>(this, 'name') as String;
+  String get taskName =>
+      RealmObjectBase.get<String>(this, 'taskName') as String;
   @override
-  set name(String value) => throw RealmUnsupportedSetError();
+  set taskName(String value) => throw RealmUnsupportedSetError();
 
   @override
   DateTime get doneTime =>
@@ -139,6 +142,11 @@ class Pomodoro extends _Pomodoro
   set memo(String? value) => RealmObjectBase.set(this, 'memo', value);
 
   @override
+  String? get extra => RealmObjectBase.get<String>(this, 'extra') as String?;
+  @override
+  set extra(String? value) => RealmObjectBase.set(this, 'extra', value);
+
+  @override
   Stream<RealmObjectChanges<Pomodoro>> get changes =>
       RealmObjectBase.getChanges<Pomodoro>(this);
 
@@ -153,10 +161,11 @@ class Pomodoro extends _Pomodoro
       SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
       SchemaProperty('todayInt', RealmPropertyType.int),
       SchemaProperty('taskId', RealmPropertyType.int),
-      SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('taskName', RealmPropertyType.string),
       SchemaProperty('doneTime', RealmPropertyType.timestamp),
       SchemaProperty('durationMinutes', RealmPropertyType.int),
       SchemaProperty('memo', RealmPropertyType.string, optional: true),
+      SchemaProperty('extra', RealmPropertyType.string, optional: true),
     ]);
   }
 }

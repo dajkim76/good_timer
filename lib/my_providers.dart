@@ -68,7 +68,6 @@ class TaskListProvider with ChangeNotifier {
     }
 
     _taskList = realm.all<Task>().toList();
-    loadPomodoro();
     notifyListeners();
   }
 
@@ -114,20 +113,25 @@ class TaskListProvider with ChangeNotifier {
       realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, durationMinutes));
     });
 
-    loadPomodoro();
     notifyListeners();
   }
 
-  void loadPomodoro() {
-    var now = DateTime.now();
-    String todayStr = DateFormat('yyyyMMdd').format(now);
-    _pomodoroList?.clear();
-    _pomodoroList = realm.all<Pomodoro>().query("todayInt == \$0", [int.parse(todayStr)]).toList();
+  void deletePomodoroList(List<Pomodoro> pomodoroList) {
+    realm.write(() => realm.deleteMany<Pomodoro>(pomodoroList));
   }
 
-  void clearPomodoro() {
-    realm.write(() => realm.deleteAll<Pomodoro>());
-    loadPomodoro();
-    notifyListeners();
+  void deletePomodoro(Pomodoro pomodoro) {
+    realm.write(() => realm.delete<Pomodoro>(pomodoro));
+  }
+
+  void updatePomodoroMemo(Pomodoro pomodoro, String? memo) {
+    realm.write(() {
+      pomodoro.memo = memo;
+    });
+  }
+
+  List<Pomodoro> loadPomodoroList(DateTime dateTime) {
+    String todayStr = DateFormat('yyyyMMdd').format(dateTime);
+    return realm.all<Pomodoro>().query("todayInt == \$0", [int.parse(todayStr)]).toList();
   }
 }
