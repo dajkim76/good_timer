@@ -259,7 +259,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       // reset
       buttons.add(IconButton(
         icon: const Icon(
-          Icons.stop_circle_rounded,
+          Icons.cancel_outlined,
           size: kSize,
           color: kColor,
         ),
@@ -283,10 +283,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: Scaffold(
           key: _key,
           appBar: AppBar(
-            // TRY THIS: Try changing the color here to a specific color (to
-            // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-            // change color while the other colors stay the same.
-            backgroundColor: Colors.black,
             // Here we take the value from the MyHomePage object that was created by
             // the App.build method, and use it to set our appbar title.
             title: Text(S.of(context).appName),
@@ -307,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 tooltip: S.of(context).tasks,
               ),
               IconButton(
-                icon: const Icon(Icons.alarm_on),
+                icon: const Icon(Icons.calendar_month),
                 onPressed: _onClickPomodoro,
                 tooltip: S.of(context).pomodoro_count,
               ),

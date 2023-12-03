@@ -21,7 +21,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
 
     return Container(
       width: MediaQuery.of(context).size.width * 2 / 3,
-      color: Colors.white,
+      color: Theme.of(context).secondaryHeaderColor,
       padding: EdgeInsets.fromLTRB(20, 20, 10, 10),
       child: Column(
         children: [
@@ -88,7 +88,6 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            backgroundColor: Colors.white,
             title: Text(S.of(context).task_name),
             content: TextField(
               controller: textFieldController,
@@ -115,7 +114,6 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            backgroundColor: Colors.white,
             title: Text(taskName),
             content: Text(S.of(context).confirm_deletion),
             actions: <Widget>[
