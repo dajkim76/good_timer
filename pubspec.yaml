@@ -45,6 +45,7 @@ dependencies:
   fluttertoast: ^8.2.4
   realm: ^1.6.1
   sprintf: ^7.0.0
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:
