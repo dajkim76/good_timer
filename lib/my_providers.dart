@@ -11,10 +11,12 @@ class SettingsProvider with ChangeNotifier {
   bool _isPlaySound = true;
   int _selectedTaskId = 0;
   bool _isAnalogClock = true;
+  int _calendarFormat = 0;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
   bool get isAnalogClock => _isAnalogClock;
+  int get calendarFormat => _calendarFormat;
 
   SettingsProvider() {
     loadFromSharedPref();
@@ -25,6 +27,7 @@ class SettingsProvider with ChangeNotifier {
     _isPlaySound = _sharedPreferences.getBool("isPlaySound") ?? true;
     _isAnalogClock = _sharedPreferences.getBool("isAnalogClock") ?? true;
     _selectedTaskId = _sharedPreferences.getInt("selectedTaskId") ?? 0;
+    _calendarFormat = _sharedPreferences.getInt("calendarFormat") ?? 0;
     notifyListeners();
   }
 
@@ -44,6 +47,11 @@ class SettingsProvider with ChangeNotifier {
     _selectedTaskId = taskId;
     _sharedPreferences.setInt("selectedTaskId", taskId);
     notifyListeners();
+  }
+
+  void setCalendarFormat(int calendarFormat) {
+    _calendarFormat = calendarFormat;
+    _sharedPreferences.setInt("calendarFormat", calendarFormat);
   }
 }
 

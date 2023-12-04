@@ -31,6 +31,7 @@ class _PomodoroState extends State<PomodoroPage> {
   void initState() {
     super.initState();
     _pomodoroList = context.read<TaskListProvider>().loadPomodoroList(_focusedDay);
+    _calendarFormat = _getCalendarFormat();
     _portraitModeOnly();
   }
 
@@ -76,8 +77,14 @@ class _PomodoroState extends State<PomodoroPage> {
               focusedDay: _focusedDay,
               firstDay: DateTime.utc(2010, 10, 16),
               lastDay: DateTime.utc(2030, 10, 16),
+              availableCalendarFormats: {
+                CalendarFormat.month: S.of(context).calendar_month,
+                CalendarFormat.twoWeeks: S.of(context).calendar_two_weeks,
+                CalendarFormat.week: S.of(context).calendar_week,
+              },
               calendarFormat: _calendarFormat,
               onFormatChanged: (format) {
+                _setCalendarFormat(format);
                 setState(() {
                   _calendarFormat = format;
                 });
@@ -114,6 +121,38 @@ class _PomodoroState extends State<PomodoroPage> {
     }
   }
 
+  CalendarFormat _getCalendarFormat() {
+    final settings = context.read<SettingsProvider>();
+    switch (settings.calendarFormat) {
+      case 0:
+        return CalendarFormat.month;
+      case 1:
+        return CalendarFormat.twoWeeks;
+      case 2:
+        return CalendarFormat.week;
+      default:
+        return CalendarFormat.month;
+    }
+  }
+
+  void _setCalendarFormat(CalendarFormat calendarFormat) {
+    final settings = context.read<SettingsProvider>();
+    switch (calendarFormat) {
+      case CalendarFormat.month:
+        settings.setCalendarFormat(0);
+        break;
+      case CalendarFormat.twoWeeks:
+        settings.setCalendarFormat(1);
+        break;
+      case CalendarFormat.week:
+        settings.setCalendarFormat(2);
+        break;
+      default:
+        settings.setCalendarFormat(0);
+        break;
+    }
+  }
+
   Widget _buildPomodoroLost(BuildContext context, final TaskListProvider taskListProvider) {
     return _pomodoroList.isEmpty
         ? Column(
@@ -128,19 +167,16 @@ class _PomodoroState extends State<PomodoroPage> {
             itemCount: _pomodoroList.length,
             itemBuilder: (context, index) => ListTile(
                 leading: getPomodoroCountIcon(index + 1),
-                title: Text(
-                  _pomodoroList[index].taskName,
-                ),
-                subtitle: Row(
+                title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      _pomodoroList[index].memo ?? "",
-                      style: const TextStyle(color: Colors.yellowAccent),
-                    ),
+                    Text(_pomodoroList[index].taskName, overflow: TextOverflow.ellipsis),
                     Text(DateFormat('HH:mm').format(_pomodoroList[index].doneTime.toLocal()))
                   ],
                 ),
+                subtitle: _pomodoroList[index].memo?.isNotEmpty == true
+                    ? Text(_pomodoroList[index].memo!, style: const TextStyle(color: Colors.yellowAccent))
+                    : null,
                 trailing: PopupMenuButton<int>(
                   onSelected: (int menuIndex) {
                     if (menuIndex == 0) onClickMemo(context, _pomodoroList[index]);

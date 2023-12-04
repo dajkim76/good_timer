@@ -24,5 +24,8 @@
   "rename": "Rename",
   "empty_data": "Empty data",
   "memo": "Memo",
-  "pomodoro_count_fmt": "{count} Pomodoro(s)"
+  "pomodoro_count_fmt": "{count} Pomodoro(s)",
+  "calendar_month": "Month",
+  "calendar_two_weeks": "2 weeks",
+  "calendar_week": "Week"
 }

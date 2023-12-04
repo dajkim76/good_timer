@@ -24,5 +24,8 @@
   "rename": "이름 변경",
   "empty_data": "데이타가 없습니다",
   "memo": "메모",
-  "pomodoro_count_fmt": "뽀모도로: {count}개"
+  "pomodoro_count_fmt": "뽀모도로 {count}개",
+  "calendar_month": "월 단위",
+  "calendar_two_weeks": "2주 단위",
+  "calendar_week": "주 단위"
 }
