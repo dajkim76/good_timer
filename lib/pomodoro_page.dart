@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:good_timer/my_providers.dart';
+import 'package:good_timer/pomodo_count_icon.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:good_timer/utils.dart';
 import 'package:intl/intl.dart';
@@ -104,8 +105,11 @@ class _PomodoroState extends State<PomodoroPage> {
               calendarStyle:
                   const CalendarStyle(markerDecoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle))),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            Text(
+              S.of(context).pomodoro_count_fmt(_pomodoroList.length),
+              style: const TextStyle(color: Colors.deepOrange),
+            ),
             Text(DateFormat.yMMMMd().format(_focusedDay)),
-            Text(S.of(context).pomodoro_count_fmt(_pomodoroList.length))
           ]),
           Expanded(child: _buildPomodoroLost(context, taskListProvider))
         ]));
@@ -166,7 +170,7 @@ class _PomodoroState extends State<PomodoroPage> {
         : ListView.builder(
             itemCount: _pomodoroList.length,
             itemBuilder: (context, index) => ListTile(
-                leading: getPomodoroCountIcon(index + 1),
+                leading: PomodoroCountIcon(index + 1),
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -175,7 +179,7 @@ class _PomodoroState extends State<PomodoroPage> {
                   ],
                 ),
                 subtitle: _pomodoroList[index].memo?.isNotEmpty == true
-                    ? Text(_pomodoroList[index].memo!, style: const TextStyle(color: Colors.yellowAccent))
+                    ? Text(_pomodoroList[index].memo!, style: const TextStyle(color: Colors.orange))
                     : null,
                 trailing: PopupMenuButton<int>(
                   onSelected: (int menuIndex) {
@@ -293,43 +297,4 @@ class _PomodoroState extends State<PomodoroPage> {
           );
         });
   }
-}
-
-Icon getPomodoroCountIcon(int count) {
-  switch (count) {
-    case 1:
-      return const Icon(
-        Icons.looks_one,
-        color: Colors.yellow,
-      );
-    case 2:
-      return const Icon(
-        Icons.looks_two,
-        color: Colors.yellow,
-      );
-    case 3:
-      return const Icon(
-        Icons.looks_3,
-        color: Colors.yellow,
-      );
-    case 4:
-      return const Icon(
-        Icons.looks_4,
-        color: Colors.yellow,
-      );
-    case 5:
-      return const Icon(
-        Icons.looks_5,
-        color: Colors.yellow,
-      );
-    case 6:
-      return const Icon(
-        Icons.looks_6,
-        color: Colors.yellow,
-      );
-  }
-  return const Icon(
-    Icons.alarm_on,
-    color: Colors.yellow,
-  );
 }
