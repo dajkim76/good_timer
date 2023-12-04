@@ -43,7 +43,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
                       itemCount: taskListProvider.taskList.length,
                       itemBuilder: (context, index) => ListTile(
                             visualDensity: const VisualDensity(vertical: -4),
-                            title: Text(taskListProvider.taskList[index].name),
+                            title: Text(taskListProvider.taskList[index].name, overflow: TextOverflow.ellipsis),
                             contentPadding: const EdgeInsets.all(0),
                             onTap: () {
                               settings.setSelectedTaskId(taskListProvider.taskList[index].id);

@@ -54,6 +54,8 @@ class TaskListProvider with ChangeNotifier {
   late Realm realm;
   List<Task> get taskList => _taskList;
   List<Pomodoro> get pomodoroList => _pomodoroList ?? [];
+  int _todayPomodoroCount = 0;
+  int get todayPomodoroCount => _todayPomodoroCount;
 
   TaskListProvider() {
     var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 1);
@@ -68,6 +70,7 @@ class TaskListProvider with ChangeNotifier {
     }
 
     _taskList = realm.all<Task>().toList();
+    loadTodayPomodoroCount();
     notifyListeners();
   }
 
@@ -107,21 +110,32 @@ class TaskListProvider with ChangeNotifier {
       taskId = -1;
       taskName = "No name";
     }
+
     realm.write(() {
       var now = DateTime.now();
       String todayStr = DateFormat('yyyyMMdd').format(now);
       realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, durationMinutes));
     });
 
+    loadTodayPomodoroCount();
     notifyListeners();
+  }
+
+  void loadTodayPomodoroCount() {
+    String todayStr = DateFormat('yyyyMMdd').format(DateTime.now());
+    _todayPomodoroCount = realm.query<Pomodoro>("todayInt == \$0", [int.parse(todayStr)]).length;
   }
 
   void deletePomodoroList(List<Pomodoro> pomodoroList) {
     realm.write(() => realm.deleteMany<Pomodoro>(pomodoroList));
+    loadTodayPomodoroCount();
+    notifyListeners();
   }
 
   void deletePomodoro(Pomodoro pomodoro) {
     realm.write(() => realm.delete<Pomodoro>(pomodoro));
+    loadTodayPomodoroCount();
+    notifyListeners();
   }
 
   void updatePomodoroMemo(Pomodoro pomodoro, String? memo) {
@@ -132,6 +146,6 @@ class TaskListProvider with ChangeNotifier {
 
   List<Pomodoro> loadPomodoroList(DateTime dateTime) {
     String todayStr = DateFormat('yyyyMMdd').format(dateTime);
-    return realm.all<Pomodoro>().query("todayInt == \$0", [int.parse(todayStr)]).toList();
+    return realm.query<Pomodoro>("todayInt == \$0", [int.parse(todayStr)]).toList();
   }
 }

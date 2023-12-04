@@ -127,7 +127,7 @@ class _PomodoroState extends State<PomodoroPage> {
         : ListView.builder(
             itemCount: _pomodoroList.length,
             itemBuilder: (context, index) => ListTile(
-                leading: getIcon(index),
+                leading: getPomodoroCountIcon(index + 1),
                 title: Text(
                   _pomodoroList[index].taskName,
                 ),
@@ -159,45 +159,6 @@ class _PomodoroState extends State<PomodoroPage> {
                     ];
                   },
                 )));
-  }
-
-  Icon getIcon(int index) {
-    switch (index) {
-      case 0:
-        return const Icon(
-          Icons.looks_one,
-          color: Colors.white,
-        );
-      case 1:
-        return const Icon(
-          Icons.looks_two,
-          color: Colors.white,
-        );
-      case 2:
-        return const Icon(
-          Icons.looks_3,
-          color: Colors.white,
-        );
-      case 3:
-        return const Icon(
-          Icons.looks_4,
-          color: Colors.white,
-        );
-      case 4:
-        return const Icon(
-          Icons.looks_5,
-          color: Colors.white,
-        );
-      case 5:
-        return const Icon(
-          Icons.looks_6,
-          color: Colors.white,
-        );
-    }
-    return const Icon(
-      Icons.list,
-      color: Colors.white,
-    );
   }
 
   void onClickDelete(BuildContext context, Pomodoro pomodoro) {
@@ -296,4 +257,43 @@ class _PomodoroState extends State<PomodoroPage> {
           );
         });
   }
+}
+
+Icon getPomodoroCountIcon(int count) {
+  switch (count) {
+    case 1:
+      return const Icon(
+        Icons.looks_one,
+        color: Colors.yellow,
+      );
+    case 2:
+      return const Icon(
+        Icons.looks_two,
+        color: Colors.yellow,
+      );
+    case 3:
+      return const Icon(
+        Icons.looks_3,
+        color: Colors.yellow,
+      );
+    case 4:
+      return const Icon(
+        Icons.looks_4,
+        color: Colors.yellow,
+      );
+    case 5:
+      return const Icon(
+        Icons.looks_5,
+        color: Colors.yellow,
+      );
+    case 6:
+      return const Icon(
+        Icons.looks_6,
+        color: Colors.yellow,
+      );
+  }
+  return const Icon(
+    Icons.alarm_on,
+    color: Colors.yellow,
+  );
 }

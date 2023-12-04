@@ -273,6 +273,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
+    final taskList = context.watch<TaskListProvider>();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -296,16 +297,18 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             ),
             actions: <Widget>[
               IconButton(
+                icon: taskList.todayPomodoroCount == 0
+                    ? const Icon(Icons.calendar_month)
+                    : getPomodoroCountIcon(taskList.todayPomodoroCount),
+                onPressed: _onClickPomodoro,
+                tooltip: S.of(context).pomodoro_count,
+              ),
+              IconButton(
                 icon: const Icon(Icons.list),
                 onPressed: () {
                   _key.currentState?.openEndDrawer();
                 },
                 tooltip: S.of(context).tasks,
-              ),
-              IconButton(
-                icon: const Icon(Icons.calendar_month),
-                onPressed: _onClickPomodoro,
-                tooltip: S.of(context).pomodoro_count,
               ),
               IconButton(
                 icon: const Icon(Icons.settings),
@@ -333,11 +336,17 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               // wireframe for each widget.
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Text(
-                  _getModeLabel(context),
-                  textAlign: TextAlign.center,
-                  maxLines: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 1,
-                  style: TextStyle(color: _getModeLabelColor(), fontSize: 40, fontWeight: FontWeight.bold),
+                TextButton(
+                  child: Text(
+                    _getModeLabel(context),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 1,
+                    style: TextStyle(color: _getModeLabelColor(), fontSize: 40, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    _key.currentState?.openEndDrawer();
+                  },
                 ),
                 !settings.isAnalogClock
                     ? Text(
