@@ -1,9 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- android_alarm_manager_plus start -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <!-- For apps with targetSDK=31 (Android 12) -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <!-- android_alarm_manager_plus end -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <!-- lock screen -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />

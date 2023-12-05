@@ -14,6 +14,7 @@ import 'package:good_timer/settings_page.dart';
 import 'package:good_timer/task_list_drawer.dart';
 import 'package:good_timer/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'generated/l10n.dart';
@@ -94,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         handleError(future);
       });
       Wakelock.enable();
+      Vibration.vibrate(duration: 10);
     }
   }
 
@@ -107,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     Future future = MyNativePlugin.cancelAlarm(1);
     handleError(future);
     Wakelock.disable();
+    Vibration.vibrate(duration: 10);
   }
 
   void _onClickResume() {
@@ -120,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       handleError(future);
     });
     Wakelock.enable();
+    Vibration.vibrate(duration: 10);
   }
 
   void _onClickReset() {
@@ -135,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         isFocusMode = false;
       });
       Wakelock.disable();
+      Vibration.vibrate(duration: 10);
     }
   }
 
@@ -145,13 +150,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     int remainSeconds = _getModeSeconds() - (timerDuration + now.difference(startedTime)).inSeconds;
     if (remainSeconds <= 0) {
       _playSound();
+      if (isFocusMode) {
+        MyRealm.instance.addPomodoro(context.read<SettingsProvider>().selectedTaskId, 25);
+        context.read<TaskListProvider>().notifyTodayPomodoroCount();
+        Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
+      }
       setState(() {
-        if (isFocusMode) {
-          var taskListProvider = context.read<TaskListProvider>();
-          var settingsProvider = context.read<SettingsProvider>();
-          MyRealm.instance.addPomodoro(settingsProvider.selectedTaskId, 25);
-          taskListProvider.notifyTodayPomodoroCount();
-        }
         isFocusMode = !isFocusMode;
         startedTime = DateTime.now();
         timerDuration = Duration.zero;
