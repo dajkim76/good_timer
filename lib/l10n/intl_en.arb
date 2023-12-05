@@ -27,5 +27,8 @@
   "pomodoro_count_fmt": "{count, plural, =0{No pomodoro} =1{1 pomodoro} other{{count} pomodoros}}",
   "calendar_month": "Month",
   "calendar_two_weeks": "2 weeks",
-  "calendar_week": "Week"
+  "calendar_week": "Week",
+  "hide": "Hide",
+  "show": "Show",
+  "show_hidden_task": "Show hidden tasks"
 }

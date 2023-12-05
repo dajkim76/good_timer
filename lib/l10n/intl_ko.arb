@@ -27,5 +27,8 @@
   "pomodoro_count_fmt": "뽀모도로 {count}개",
   "calendar_month": "월 단위",
   "calendar_two_weeks": "2주 단위",
-  "calendar_week": "주 단위"
+  "calendar_week": "주 단위",
+  "hide": "숨기기",
+  "show": "보여주기",
+  "show_hidden_task": "숨겨진 태스크도 보기"
 }

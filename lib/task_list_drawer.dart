@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_timer/my_providers.dart';
+import 'package:good_timer/pomodo_count_icon.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:provider/provider.dart';
 
@@ -15,90 +16,159 @@ class TaskListDrawer extends StatefulWidget {
 }
 
 class _TaskListDrawerState extends State<TaskListDrawer> {
+  late List<Task> taskList;
+
+  @override
+  void initState() {
+    super.initState();
+    var taskListProvider = context.read<TaskListProvider>();
+    var settings = context.read<SettingsProvider>();
+    taskList = taskListProvider.loadTaskList(settings.showHiddenTask);
+  }
+
   @override
   Widget build(BuildContext context) {
-    var taskListProvider = Provider.of<TaskListProvider>(context);
-    var settings = Provider.of<SettingsProvider>(context);
+    var taskListProvider = context.watch<TaskListProvider>();
+    var settings = context.watch<SettingsProvider>();
 
     return Container(
       width: MediaQuery.of(context).size.width * 2 / 3,
       color: Theme.of(context).secondaryHeaderColor,
-      padding: EdgeInsets.fromLTRB(20, 20, 10, 10),
+      padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
       child: Column(
         children: [
-          ElevatedButton.icon(
-              onPressed: () {
-                onClickAddTask(context);
-              },
-              icon: const Icon(Icons.add),
-              label: Text(S.of(context).add_task)),
-          taskListProvider.taskList.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-                  child: Text(
-                    S.of(context).empty_data,
-                  ),
-                )
-              : Expanded(
-                  child: ListView.builder(
-                      itemCount: taskListProvider.taskList.length,
-                      itemBuilder: (context, index) => ListTile(
-                            visualDensity: const VisualDensity(vertical: -4),
-                            title: Text(taskListProvider.taskList[index].name, overflow: TextOverflow.ellipsis),
-                            subtitle: taskListProvider.taskList[index].memo?.isNotEmpty == true
-                                ? Text(taskListProvider.taskList[index].memo!,
-                                    style: const TextStyle(color: Colors.orange))
-                                : null,
-                            contentPadding: const EdgeInsets.all(0),
-                            onTap: () {
-                              settings.setSelectedTaskId(taskListProvider.taskList[index].id);
-                              Scaffold.of(context).closeEndDrawer();
-                            },
-                            trailing: PopupMenuButton<int>(
-                              onSelected: (int menuIndex) {
-                                if (menuIndex == 0) onClickRename(context, taskListProvider.taskList[index].id);
-                                if (menuIndex == 1) onClickDelete(context, taskListProvider.taskList[index].id);
-                                if (menuIndex == 2) onClickMemo(context, taskListProvider.taskList[index]);
-                              },
-                              itemBuilder: (BuildContext context) {
-                                return [
-                                  PopupMenuItem(
-                                    value: 0,
-                                    child: Text(S.of(context).rename),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 2,
-                                    child: Text(S.of(context).memo),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Text(S.of(context).delete),
-                                  )
-                                ];
-                              },
-                            ),
-                          )))
+          buildHeader(context, settings),
+          taskList.isEmpty ? buildEmptyData(context) : Expanded(child: buildListView(taskListProvider, settings))
         ],
       ),
     );
   }
 
-  void onClickAddTask(BuildContext context) async {
-    var taskListProvider = context.read<TaskListProvider>();
-    String? name = await _showTextInputDialog(context);
-    if (name?.isNotEmpty == true) {
-      taskListProvider.addTask(name!);
+  ListView buildListView(TaskListProvider taskListProvider, SettingsProvider settings) {
+    return ListView.builder(
+        itemCount: taskList.length,
+        itemBuilder: (context, index) => ListTile(
+              visualDensity: const VisualDensity(vertical: -4),
+              title: buildTaskTitle(taskList[index]),
+              subtitle: taskList[index].memo?.isNotEmpty == true
+                  ? Text(taskList[index].memo!, style: const TextStyle(color: Colors.orange))
+                  : null,
+              contentPadding: const EdgeInsets.all(0),
+              onTap: () {
+                settings.setSelectedTaskId(taskList[index].id);
+                Scaffold.of(context).closeEndDrawer();
+              },
+              leading: PomodoroCountIcon(taskList[index].pomoCount),
+              trailing: buildPopupMenuButton(taskList[index]),
+            ));
+  }
+
+  Padding buildEmptyData(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+      child: Text(
+        S.of(context).empty_data,
+      ),
+    );
+  }
+
+  Row buildHeader(BuildContext context, SettingsProvider settings) {
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      ElevatedButton.icon(
+          onPressed: () {
+            onClickAddTask(context);
+          },
+          icon: const Icon(Icons.add),
+          label: Text(S.of(context).add_task)),
+      PopupMenuButton<int>(
+        onSelected: onClickShowHiddenTask,
+        itemBuilder: (BuildContext context) {
+          return [
+            PopupMenuItem(
+              value: 0,
+              child: Row(children: [
+                settings.showHiddenTask
+                    ? const Icon(Icons.check_box_outlined)
+                    : const Icon(Icons.check_box_outline_blank),
+                Text(S.of(context).show_hidden_task)
+              ]),
+            )
+          ];
+        },
+      ),
+    ]);
+  }
+
+  Widget buildTaskTitle(Task task) {
+    if (task.isHidden) {
+      return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [Text(task.name, overflow: TextOverflow.ellipsis), const Icon(Icons.visibility_off)]);
+    } else {
+      return Text(task.name, overflow: TextOverflow.ellipsis);
     }
   }
 
-  Future<String?> _showTextInputDialog(BuildContext context, {String text = ""}) async {
+  PopupMenuButton<int> buildPopupMenuButton(Task task) {
+    return PopupMenuButton<int>(
+      itemBuilder: (BuildContext context) {
+        return [
+          PopupMenuItem(
+            value: 0,
+            child: Text(S.of(context).rename),
+          ),
+          PopupMenuItem(
+            value: 2,
+            child: Text(S.of(context).memo),
+          ),
+          PopupMenuItem(
+            value: 3,
+            child: task.isHidden ? Text(S.of(context).show) : Text(S.of(context).hide),
+          ),
+          PopupMenuItem(
+            value: 1,
+            child: Text(S.of(context).delete),
+          )
+        ];
+      },
+      onSelected: (int menuIndex) {
+        if (menuIndex == 0) onClickRename(task);
+        if (menuIndex == 1) onClickDelete(task);
+        if (menuIndex == 2) onClickMemo(task);
+        if (menuIndex == 3) onClickToggleHidden(task);
+      },
+    );
+  }
+
+  void onClickShowHiddenTask(int _) {
+    var settings = context.read<SettingsProvider>();
+    bool showHiddenTask = !settings.showHiddenTask;
+    settings.setShowHiddenTask(showHiddenTask);
+
+    setState(() {
+      taskList = context.read<TaskListProvider>().loadTaskList(showHiddenTask);
+    });
+  }
+
+  void onClickAddTask(BuildContext context) async {
+    var taskListProvider = context.read<TaskListProvider>();
+    String? name = await _showTextInputDialog(context, S.of(context).task_name);
+    if (name?.isNotEmpty == true) {
+      Task newTask = taskListProvider.addTask(name!);
+      setState(() {
+        taskList.add(newTask);
+      });
+    }
+  }
+
+  Future<String?> _showTextInputDialog(BuildContext context, String title, {String text = ""}) async {
     final textFieldController = TextEditingController()..text = text;
 
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(S.of(context).task_name),
+            title: Text(title),
             content: TextField(
               controller: textFieldController,
             ),
@@ -116,15 +186,13 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
         });
   }
 
-  void onClickDelete(BuildContext context, int taskId) async {
+  void onClickDelete(Task task) async {
     var taskListProvider = context.read<TaskListProvider>();
-    var taskName = taskListProvider.getTaskName(taskId) ?? "NO NAME";
-
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(taskName),
+            title: Text(task.name),
             content: Text(S.of(context).confirm_deletion),
             actions: <Widget>[
               TextButton(
@@ -134,7 +202,10 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
               TextButton(
                 child: Text(S.of(context).ok),
                 onPressed: () {
-                  taskListProvider.deleteTask(taskId);
+                  taskListProvider.deleteTask(task);
+                  setState(() {
+                    taskList.remove(task);
+                  });
                   Navigator.pop(context);
                 },
               ),
@@ -143,20 +214,28 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
         });
   }
 
-  void onClickRename(BuildContext context, int taskId) async {
+  void onClickRename(Task task) async {
     var taskListProvider = context.read<TaskListProvider>();
-    var taskName = taskListProvider.getTaskName(taskId) ?? "NO NAME";
-    var newName = await _showTextInputDialog(context, text: taskName);
+    var taskName = task.name;
+    var newName = await _showTextInputDialog(context, S.of(context).task_name, text: taskName);
     if (newName?.isNotEmpty == true) {
-      taskListProvider.updateTaskName(taskId, newName!);
+      taskListProvider.updateTaskName(task, newName!);
+      setState(() {});
     }
   }
 
-  void onClickMemo(BuildContext context, Task task) async {
+  void onClickMemo(Task task) async {
     var taskListProvider = context.read<TaskListProvider>();
-    var newMemo = await _showTextInputDialog(context, text: task.memo ?? "");
+    var newMemo = await _showTextInputDialog(context, S.of(context).memo, text: task.memo ?? "");
     if (newMemo != null) {
-      taskListProvider.updateTaskMemo(task.id, newMemo);
+      taskListProvider.updateTaskMemo(task, newMemo);
+      setState(() {});
     }
+  }
+
+  void onClickToggleHidden(Task task) async {
+    var taskListProvider = context.read<TaskListProvider>();
+    taskListProvider.toggleHidden(task);
+    setState(() {});
   }
 }

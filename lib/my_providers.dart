@@ -12,11 +12,13 @@ class SettingsProvider with ChangeNotifier {
   int _selectedTaskId = 0;
   bool _isAnalogClock = true;
   int _calendarFormat = 0;
+  bool _showHiddenTask = false;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
   bool get isAnalogClock => _isAnalogClock;
   int get calendarFormat => _calendarFormat;
+  bool get showHiddenTask => _showHiddenTask;
 
   SettingsProvider() {
     loadFromSharedPref();
@@ -28,6 +30,7 @@ class SettingsProvider with ChangeNotifier {
     _isAnalogClock = _sharedPreferences.getBool("isAnalogClock") ?? true;
     _selectedTaskId = _sharedPreferences.getInt("selectedTaskId") ?? 0;
     _calendarFormat = _sharedPreferences.getInt("calendarFormat") ?? 0;
+    _showHiddenTask = _sharedPreferences.getBool("showHiddenTask") ?? false;
     notifyListeners();
   }
 
@@ -53,14 +56,18 @@ class SettingsProvider with ChangeNotifier {
     _calendarFormat = calendarFormat;
     _sharedPreferences.setInt("calendarFormat", calendarFormat);
   }
+
+  void setShowHiddenTask(bool showHiddenTask) {
+    _showHiddenTask = showHiddenTask;
+    _sharedPreferences.setBool("showHiddenTask", showHiddenTask);
+    notifyListeners();
+  }
 }
 
 class TaskListProvider with ChangeNotifier {
-  late List<Task> _taskList;
   List<Pomodoro>? _pomodoroList;
 
   late Realm realm;
-  List<Task> get taskList => _taskList;
   List<Pomodoro> get pomodoroList => _pomodoroList ?? [];
   int _todayPomodoroCount = 0;
   int get todayPomodoroCount => _todayPomodoroCount;
@@ -77,9 +84,16 @@ class TaskListProvider with ChangeNotifier {
       });
     }
 
-    _taskList = realm.all<Task>().toList();
     loadTodayPomodoroCount();
     notifyListeners();
+  }
+
+  List<Task> loadTaskList(bool showAllTask) {
+    if (showAllTask) {
+      return realm.all<Task>().toList();
+    } else {
+      return realm.query<Task>("isHidden = false").toList();
+    }
   }
 
   String? getTaskName(int id) {
@@ -90,40 +104,34 @@ class TaskListProvider with ChangeNotifier {
     return realm.find<Task>(id)?.memo;
   }
 
-  void addTask(String name) {
+  Task addTask(String name) {
     var newTask = Task(DateTime.now().millisecondsSinceEpoch, name);
     realm.write(() {
       realm.add(newTask);
     });
-    _taskList.add(newTask);
-    notifyListeners();
+    return newTask;
   }
 
-  void updateTaskName(int id, String name) {
-    final task = _taskList.firstWhere((element) => element.id == id);
-    if (task != null) {
-      realm.write(() {
-        task.name = name;
-      });
-      notifyListeners();
-    }
+  void updateTaskName(Task task, String name) {
+    realm.write(() {
+      task.name = name;
+    });
   }
 
-  void updateTaskMemo(int id, String memo) {
-    final task = _taskList.firstWhere((element) => element.id == id);
-    if (task != null) {
-      realm.write(() {
-        task.memo = memo;
-      });
-      notifyListeners();
-    }
+  void toggleHidden(Task task) {
+    realm.write(() {
+      task.isHidden = !task.isHidden;
+    });
   }
 
-  void deleteTask(int taskId) {
-    var task = _taskList.firstWhere((element) => element.id == taskId);
+  void updateTaskMemo(Task task, String memo) {
+    realm.write(() {
+      task.memo = memo;
+    });
+  }
+
+  void deleteTask(Task task) {
     realm.write(() => realm.delete<Task>(task));
-    _taskList.remove(task);
-    notifyListeners();
   }
 
   void addPomodoro(int taskId, int durationMinutes) {
@@ -136,6 +144,7 @@ class TaskListProvider with ChangeNotifier {
     }
 
     realm.write(() {
+      if (task != null) task.pomoCount = task.pomoCount + 1;
       var now = DateTime.now();
       String todayStr = DateFormat('yyyyMMdd').format(now);
       realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, durationMinutes,

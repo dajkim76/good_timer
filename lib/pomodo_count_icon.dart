@@ -5,7 +5,8 @@ class PomodoroCountIcon extends CustomPaint {
 }
 
 class _PomodoroCountPainter extends CustomPainter {
-  int count;
+  final int count;
+
   final Paint fillPaint = Paint()
     ..color = Colors.orange
     ..style = PaintingStyle.fill;
@@ -27,8 +28,7 @@ class _PomodoroCountPainter extends CustomPainter {
 
     // draw count
     textPainter.text = TextSpan(
-        text: count >= 100 ? "99+" : count.toString(),
-        style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold));
+        text: count.toString(), style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold));
     textPainter.layout();
     textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height / 2 - textPainter.height / 2));
   }

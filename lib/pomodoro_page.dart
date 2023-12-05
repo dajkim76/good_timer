@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:good_timer/my_providers.dart';
-import 'package:good_timer/pomodo_count_icon.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:good_timer/utils.dart';
 import 'package:intl/intl.dart';
@@ -170,7 +169,10 @@ class _PomodoroState extends State<PomodoroPage> {
         : ListView.builder(
             itemCount: _pomodoroList.length,
             itemBuilder: (context, index) => ListTile(
-                leading: PomodoroCountIcon(index + 1),
+                leading: Text(
+                  (index + 1).toString(),
+                  style: const TextStyle(fontSize: 20, color: Colors.white),
+                ),
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
