@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:good_timer/MyRealm.dart';
 import 'package:good_timer/my_providers.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:good_timer/utils.dart';
@@ -30,7 +31,7 @@ class _PomodoroState extends State<PomodoroPage> {
   @override
   void initState() {
     super.initState();
-    _pomodoroList = context.read<TaskListProvider>().loadPomodoroList(_focusedDay);
+    _pomodoroList = MyRealm.instance.loadPomodoroList(_focusedDay);
     _calendarFormat = _getCalendarFormat();
     _portraitModeOnly();
   }
@@ -119,7 +120,7 @@ class _PomodoroState extends State<PomodoroPage> {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay; // update `_focusedDay` here as well
-        _pomodoroList = context.read<TaskListProvider>().loadPomodoroList(_focusedDay);
+        _pomodoroList = MyRealm.instance.loadPomodoroList(_focusedDay);
       });
     }
   }
@@ -220,7 +221,8 @@ class _PomodoroState extends State<PomodoroPage> {
                 onPressed: () {
                   // delete
                   var taskList = context.read<TaskListProvider>();
-                  taskList.deletePomodoro(pomodoro);
+                  MyRealm.instance.deletePomodoro(pomodoro);
+                  taskList.notifyTodayPomodoroCount();
                   setState(() {
                     _pomodoroList.remove(pomodoro);
                   });
@@ -237,7 +239,7 @@ class _PomodoroState extends State<PomodoroPage> {
     var memo = await _showTextInputDialog(context, text: pomodoro.memo ?? "");
     if (memo == null) return; // onCancel
     setState(() {
-      context.read<TaskListProvider>().updatePomodoroMemo(pomodoro, memo);
+      MyRealm.instance.updatePomodoroMemo(pomodoro, memo);
     });
   }
 
@@ -286,8 +288,8 @@ class _PomodoroState extends State<PomodoroPage> {
                 child: Text(S.of(context).ok),
                 onPressed: () {
                   // delete
-                  var taskList = context.read<TaskListProvider>();
-                  taskList.deletePomodoroList(_pomodoroList);
+                  MyRealm.instance.deletePomodoroList(_pomodoroList);
+                  context.read<TaskListProvider>().notifyTodayPomodoroCount();
                   setState(() {
                     _pomodoroList.clear();
                   });

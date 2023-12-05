@@ -4,6 +4,7 @@ import 'package:good_timer/pomodo_count_icon.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:provider/provider.dart';
 
+import 'MyRealm.dart';
 import 'generated/l10n.dart';
 
 class TaskListDrawer extends StatefulWidget {
@@ -21,30 +22,23 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
   @override
   void initState() {
     super.initState();
-    var taskListProvider = context.read<TaskListProvider>();
     var settings = context.read<SettingsProvider>();
-    taskList = taskListProvider.loadTaskList(settings.showHiddenTask);
+    taskList = MyRealm.instance.loadTaskList(settings.showHiddenTask);
   }
 
   @override
   Widget build(BuildContext context) {
-    var taskListProvider = context.watch<TaskListProvider>();
-    var settings = context.watch<SettingsProvider>();
-
     return Container(
       width: MediaQuery.of(context).size.width * 2 / 3,
       color: Theme.of(context).secondaryHeaderColor,
       padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
       child: Column(
-        children: [
-          buildHeader(context, settings),
-          taskList.isEmpty ? buildEmptyData(context) : Expanded(child: buildListView(taskListProvider, settings))
-        ],
+        children: [buildHeader(context), taskList.isEmpty ? buildEmptyData(context) : Expanded(child: buildListView())],
       ),
     );
   }
 
-  ListView buildListView(TaskListProvider taskListProvider, SettingsProvider settings) {
+  ListView buildListView() {
     return ListView.builder(
         itemCount: taskList.length,
         itemBuilder: (context, index) => ListTile(
@@ -55,7 +49,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
                   : null,
               contentPadding: const EdgeInsets.all(0),
               onTap: () {
-                settings.setSelectedTaskId(taskList[index].id);
+                context.read<SettingsProvider>().setSelectedTaskId(taskList[index].id);
                 Scaffold.of(context).closeEndDrawer();
               },
               leading: PomodoroCountIcon(taskList[index].pomoCount),
@@ -72,7 +66,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
     );
   }
 
-  Row buildHeader(BuildContext context, SettingsProvider settings) {
+  Row buildHeader(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
       ElevatedButton.icon(
           onPressed: () {
@@ -87,7 +81,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
             PopupMenuItem(
               value: 0,
               child: Row(children: [
-                settings.showHiddenTask
+                context.read<SettingsProvider>().showHiddenTask
                     ? const Icon(Icons.check_box_outlined)
                     : const Icon(Icons.check_box_outline_blank),
                 Text(S.of(context).show_hidden_task)
@@ -146,15 +140,14 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
     settings.setShowHiddenTask(showHiddenTask);
 
     setState(() {
-      taskList = context.read<TaskListProvider>().loadTaskList(showHiddenTask);
+      taskList = MyRealm.instance.loadTaskList(showHiddenTask);
     });
   }
 
   void onClickAddTask(BuildContext context) async {
-    var taskListProvider = context.read<TaskListProvider>();
     String? name = await _showTextInputDialog(context, S.of(context).task_name);
     if (name?.isNotEmpty == true) {
-      Task newTask = taskListProvider.addTask(name!);
+      Task newTask = MyRealm.instance.addTask(name!);
       setState(() {
         taskList.add(newTask);
       });
@@ -187,7 +180,6 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
   }
 
   void onClickDelete(Task task) async {
-    var taskListProvider = context.read<TaskListProvider>();
     showDialog(
         context: context,
         builder: (context) {
@@ -202,7 +194,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
               TextButton(
                 child: Text(S.of(context).ok),
                 onPressed: () {
-                  taskListProvider.deleteTask(task);
+                  MyRealm.instance.deleteTask(task);
                   setState(() {
                     taskList.remove(task);
                   });
@@ -215,27 +207,24 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
   }
 
   void onClickRename(Task task) async {
-    var taskListProvider = context.read<TaskListProvider>();
     var taskName = task.name;
     var newName = await _showTextInputDialog(context, S.of(context).task_name, text: taskName);
     if (newName?.isNotEmpty == true) {
-      taskListProvider.updateTaskName(task, newName!);
+      MyRealm.instance.updateTaskName(task, newName!);
       setState(() {});
     }
   }
 
   void onClickMemo(Task task) async {
-    var taskListProvider = context.read<TaskListProvider>();
     var newMemo = await _showTextInputDialog(context, S.of(context).memo, text: task.memo ?? "");
     if (newMemo != null) {
-      taskListProvider.updateTaskMemo(task, newMemo);
+      MyRealm.instance.updateTaskMemo(task, newMemo);
       setState(() {});
     }
   }
 
   void onClickToggleHidden(Task task) async {
-    var taskListProvider = context.read<TaskListProvider>();
-    taskListProvider.toggleHidden(task);
+    MyRealm.instance.toggleHidden(task);
     setState(() {});
   }
 }

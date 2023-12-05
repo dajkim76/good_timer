@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:good_timer/realm_models.dart';
-import 'package:intl/intl.dart';
-import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'MyRealm.dart';
 
 // 시간이 다 됬을 때, 소리로 알림 여부
 class SettingsProvider with ChangeNotifier {
@@ -65,121 +64,15 @@ class SettingsProvider with ChangeNotifier {
 }
 
 class TaskListProvider with ChangeNotifier {
-  List<Pomodoro>? _pomodoroList;
-
-  late Realm realm;
-  List<Pomodoro> get pomodoroList => _pomodoroList ?? [];
   int _todayPomodoroCount = 0;
   int get todayPomodoroCount => _todayPomodoroCount;
 
   TaskListProvider() {
-    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 2);
-    realm = Realm(config);
+    notifyTodayPomodoroCount();
+  }
 
-    var allTasks = realm.all<Task>();
-    if (kDebugMode && allTasks.isEmpty) {
-      realm.write(() {
-        realm.add(Task(DateTime.now().millisecondsSinceEpoch, "Test task #1"));
-        realm.add(Task(DateTime.now().millisecondsSinceEpoch + 1, "Test task #2"));
-      });
-    }
-
-    loadTodayPomodoroCount();
+  void notifyTodayPomodoroCount() {
+    _todayPomodoroCount = MyRealm.instance.getTodayPomodoroCount();
     notifyListeners();
-  }
-
-  List<Task> loadTaskList(bool showAllTask) {
-    if (showAllTask) {
-      return realm.all<Task>().toList();
-    } else {
-      return realm.query<Task>("isHidden = false").toList();
-    }
-  }
-
-  String? getTaskName(int id) {
-    return realm.find<Task>(id)?.name;
-  }
-
-  String? getTaskMemo(int id) {
-    return realm.find<Task>(id)?.memo;
-  }
-
-  Task addTask(String name) {
-    var newTask = Task(DateTime.now().millisecondsSinceEpoch, name);
-    realm.write(() {
-      realm.add(newTask);
-    });
-    return newTask;
-  }
-
-  void updateTaskName(Task task, String name) {
-    realm.write(() {
-      task.name = name;
-    });
-  }
-
-  void toggleHidden(Task task) {
-    realm.write(() {
-      task.isHidden = !task.isHidden;
-    });
-  }
-
-  void updateTaskMemo(Task task, String memo) {
-    realm.write(() {
-      task.memo = memo;
-    });
-  }
-
-  void deleteTask(Task task) {
-    realm.write(() => realm.delete<Task>(task));
-  }
-
-  void addPomodoro(int taskId, int durationMinutes) {
-    var task = realm.find<Task>(taskId);
-    var taskName = task?.name ?? "";
-    var memo = task?.memo;
-    if (taskName.isEmpty == true) {
-      taskId = -1;
-      taskName = "No name";
-    }
-
-    realm.write(() {
-      if (task != null) task.pomoCount = task.pomoCount + 1;
-      var now = DateTime.now();
-      String todayStr = DateFormat('yyyyMMdd').format(now);
-      realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, durationMinutes,
-          memo: memo));
-    });
-
-    loadTodayPomodoroCount();
-    notifyListeners();
-  }
-
-  void loadTodayPomodoroCount() {
-    String todayStr = DateFormat('yyyyMMdd').format(DateTime.now());
-    _todayPomodoroCount = realm.query<Pomodoro>("todayInt == \$0", [int.parse(todayStr)]).length;
-  }
-
-  void deletePomodoroList(List<Pomodoro> pomodoroList) {
-    realm.write(() => realm.deleteMany<Pomodoro>(pomodoroList));
-    loadTodayPomodoroCount();
-    notifyListeners();
-  }
-
-  void deletePomodoro(Pomodoro pomodoro) {
-    realm.write(() => realm.delete<Pomodoro>(pomodoro));
-    loadTodayPomodoroCount();
-    notifyListeners();
-  }
-
-  void updatePomodoroMemo(Pomodoro pomodoro, String? memo) {
-    realm.write(() {
-      pomodoro.memo = memo;
-    });
-  }
-
-  List<Pomodoro> loadPomodoroList(DateTime dateTime) {
-    String todayStr = DateFormat('yyyyMMdd').format(dateTime);
-    return realm.query<Pomodoro>("todayInt == \$0", [int.parse(todayStr)]).toList();
   }
 }
