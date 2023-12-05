@@ -66,7 +66,7 @@ class TaskListProvider with ChangeNotifier {
   int get todayPomodoroCount => _todayPomodoroCount;
 
   TaskListProvider() {
-    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 1);
+    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 2);
     realm = Realm(config);
 
     var allTasks = realm.all<Task>();
@@ -82,8 +82,12 @@ class TaskListProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  String? getSelectedTaskName(int id) {
+  String? getTaskName(int id) {
     return realm.find<Task>(id)?.name;
+  }
+
+  String? getTaskMemo(int id) {
+    return realm.find<Task>(id)?.memo;
   }
 
   void addTask(String name) {
@@ -95,11 +99,21 @@ class TaskListProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTask(int id, String name) {
+  void updateTaskName(int id, String name) {
     final task = _taskList.firstWhere((element) => element.id == id);
     if (task != null) {
       realm.write(() {
         task.name = name;
+      });
+      notifyListeners();
+    }
+  }
+
+  void updateTaskMemo(int id, String memo) {
+    final task = _taskList.firstWhere((element) => element.id == id);
+    if (task != null) {
+      realm.write(() {
+        task.memo = memo;
       });
       notifyListeners();
     }
@@ -113,8 +127,10 @@ class TaskListProvider with ChangeNotifier {
   }
 
   void addPomodoro(int taskId, int durationMinutes) {
-    String taskName = getSelectedTaskName(taskId) ?? "";
-    if (taskName.isEmpty) {
+    var task = realm.find<Task>(taskId);
+    var taskName = task?.name ?? "";
+    var memo = task?.memo;
+    if (taskName.isEmpty == true) {
       taskId = -1;
       taskName = "No name";
     }
@@ -122,7 +138,8 @@ class TaskListProvider with ChangeNotifier {
     realm.write(() {
       var now = DateTime.now();
       String todayStr = DateFormat('yyyyMMdd').format(now);
-      realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, durationMinutes));
+      realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, durationMinutes,
+          memo: memo));
     });
 
     loadTodayPomodoroCount();

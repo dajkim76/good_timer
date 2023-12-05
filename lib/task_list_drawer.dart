@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_timer/my_providers.dart';
+import 'package:good_timer/realm_models.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
@@ -44,6 +45,10 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
                       itemBuilder: (context, index) => ListTile(
                             visualDensity: const VisualDensity(vertical: -4),
                             title: Text(taskListProvider.taskList[index].name, overflow: TextOverflow.ellipsis),
+                            subtitle: taskListProvider.taskList[index].memo?.isNotEmpty == true
+                                ? Text(taskListProvider.taskList[index].memo!,
+                                    style: const TextStyle(color: Colors.orange))
+                                : null,
                             contentPadding: const EdgeInsets.all(0),
                             onTap: () {
                               settings.setSelectedTaskId(taskListProvider.taskList[index].id);
@@ -53,12 +58,17 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
                               onSelected: (int menuIndex) {
                                 if (menuIndex == 0) onClickRename(context, taskListProvider.taskList[index].id);
                                 if (menuIndex == 1) onClickDelete(context, taskListProvider.taskList[index].id);
+                                if (menuIndex == 2) onClickMemo(context, taskListProvider.taskList[index]);
                               },
                               itemBuilder: (BuildContext context) {
                                 return [
                                   PopupMenuItem(
                                     value: 0,
                                     child: Text(S.of(context).rename),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 2,
+                                    child: Text(S.of(context).memo),
                                   ),
                                   PopupMenuItem(
                                     value: 1,
@@ -108,7 +118,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
 
   void onClickDelete(BuildContext context, int taskId) async {
     var taskListProvider = context.read<TaskListProvider>();
-    var taskName = taskListProvider.getSelectedTaskName(taskId) ?? "NO NAME";
+    var taskName = taskListProvider.getTaskName(taskId) ?? "NO NAME";
 
     showDialog(
         context: context,
@@ -135,10 +145,18 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
 
   void onClickRename(BuildContext context, int taskId) async {
     var taskListProvider = context.read<TaskListProvider>();
-    var taskName = taskListProvider.getSelectedTaskName(taskId) ?? "NO NAME";
+    var taskName = taskListProvider.getTaskName(taskId) ?? "NO NAME";
     var newName = await _showTextInputDialog(context, text: taskName);
     if (newName?.isNotEmpty == true) {
-      taskListProvider.updateTask(taskId, newName!);
+      taskListProvider.updateTaskName(taskId, newName!);
+    }
+  }
+
+  void onClickMemo(BuildContext context, Task task) async {
+    var taskListProvider = context.read<TaskListProvider>();
+    var newMemo = await _showTextInputDialog(context, text: task.memo ?? "");
+    if (newMemo != null) {
+      taskListProvider.updateTaskMemo(task.id, newMemo);
     }
   }
 }

@@ -13,18 +13,23 @@ class Task extends _Task with RealmEntity, RealmObjectBase, RealmObject {
   Task(
     int id,
     String name, {
+    String? memo,
+    bool isHidden = false,
     int pomoCount = 0,
     int orderValue = 0,
     String? extra,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<Task>({
+        'isHidden': false,
         'pomoCount': 0,
         'orderValue': 0,
       });
     }
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'memo', memo);
+    RealmObjectBase.set(this, 'isHidden', isHidden);
     RealmObjectBase.set(this, 'pomoCount', pomoCount);
     RealmObjectBase.set(this, 'orderValue', orderValue);
     RealmObjectBase.set(this, 'extra', extra);
@@ -41,6 +46,16 @@ class Task extends _Task with RealmEntity, RealmObjectBase, RealmObject {
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  String? get memo => RealmObjectBase.get<String>(this, 'memo') as String?;
+  @override
+  set memo(String? value) => RealmObjectBase.set(this, 'memo', value);
+
+  @override
+  bool get isHidden => RealmObjectBase.get<bool>(this, 'isHidden') as bool;
+  @override
+  set isHidden(bool value) => RealmObjectBase.set(this, 'isHidden', value);
 
   @override
   int get pomoCount => RealmObjectBase.get<int>(this, 'pomoCount') as int;
@@ -71,6 +86,8 @@ class Task extends _Task with RealmEntity, RealmObjectBase, RealmObject {
     return const SchemaObject(ObjectType.realmObject, Task, 'Task', [
       SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('memo', RealmPropertyType.string, optional: true),
+      SchemaProperty('isHidden', RealmPropertyType.bool),
       SchemaProperty('pomoCount', RealmPropertyType.int),
       SchemaProperty('orderValue', RealmPropertyType.int),
       SchemaProperty('extra', RealmPropertyType.string, optional: true),

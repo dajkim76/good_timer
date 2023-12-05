@@ -193,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     if (_timer != null && !isFocusMode) return S.of(context).in_rest;
     final settings = context.watch<SettingsProvider>();
     final taskList = context.watch<TaskListProvider>();
-    var label = taskList.getSelectedTaskName(settings.selectedTaskId);
+    var label = taskList.getTaskName(settings.selectedTaskId);
     if (label != null) return label;
     if (_timer == null) return S.of(context).ready;
     return isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
@@ -298,9 +298,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             ),
             actions: <Widget>[
               IconButton(
-                icon: taskList.todayPomodoroCount == 0
-                    ? const Icon(Icons.calendar_month)
-                    : PomodoroCountIcon(taskList.todayPomodoroCount),
+                icon: PomodoroCountIcon(taskList.todayPomodoroCount),
                 onPressed: _onClickPomodoro,
                 tooltip: S.of(context).pomodoro_count,
               ),

@@ -9,6 +9,11 @@ class _Task {
   late final int id;
   // 이름
   late String name;
+
+  late String? memo;
+
+  bool isHidden = false;
+
   // total Pomodoro count
   int pomoCount = 0;
   // 순서 index
