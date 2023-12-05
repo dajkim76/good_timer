@@ -99,7 +99,7 @@ class Pomodoro extends _Pomodoro
     with RealmEntity, RealmObjectBase, RealmObject {
   Pomodoro(
     int id,
-    int todayInt,
+    int dayInt,
     int taskId,
     String taskName,
     DateTime doneTime,
@@ -108,7 +108,7 @@ class Pomodoro extends _Pomodoro
     String? extra,
   }) {
     RealmObjectBase.set(this, 'id', id);
-    RealmObjectBase.set(this, 'todayInt', todayInt);
+    RealmObjectBase.set(this, 'dayInt', dayInt);
     RealmObjectBase.set(this, 'taskId', taskId);
     RealmObjectBase.set(this, 'taskName', taskName);
     RealmObjectBase.set(this, 'doneTime', doneTime);
@@ -125,9 +125,9 @@ class Pomodoro extends _Pomodoro
   set id(int value) => throw RealmUnsupportedSetError();
 
   @override
-  int get todayInt => RealmObjectBase.get<int>(this, 'todayInt') as int;
+  int get dayInt => RealmObjectBase.get<int>(this, 'dayInt') as int;
   @override
-  set todayInt(int value) => throw RealmUnsupportedSetError();
+  set dayInt(int value) => throw RealmUnsupportedSetError();
 
   @override
   int get taskId => RealmObjectBase.get<int>(this, 'taskId') as int;
@@ -176,7 +176,7 @@ class Pomodoro extends _Pomodoro
     RealmObjectBase.registerFactory(Pomodoro._);
     return const SchemaObject(ObjectType.realmObject, Pomodoro, 'Pomodoro', [
       SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
-      SchemaProperty('todayInt', RealmPropertyType.int),
+      SchemaProperty('dayInt', RealmPropertyType.int),
       SchemaProperty('taskId', RealmPropertyType.int),
       SchemaProperty('taskName', RealmPropertyType.string),
       SchemaProperty('doneTime', RealmPropertyType.timestamp),

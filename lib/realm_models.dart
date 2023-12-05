@@ -26,7 +26,7 @@ class _Task {
 class _Pomodoro {
   @PrimaryKey()
   late final int id;
-  late final int todayInt; // 20230601
+  late final int dayInt; // 20230601
   late final int taskId;
   late final String taskName;
   late DateTime doneTime;

@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         handleError(future);
       });
       Wakelock.enable();
-      Vibration.vibrate(duration: 10);
+      HapticFeedback.lightImpact();
     }
   }
 
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     Future future = MyNativePlugin.cancelAlarm(1);
     handleError(future);
     Wakelock.disable();
-    Vibration.vibrate(duration: 10);
+    HapticFeedback.lightImpact();
   }
 
   void _onClickResume() {
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       handleError(future);
     });
     Wakelock.enable();
-    Vibration.vibrate(duration: 10);
+    HapticFeedback.lightImpact();
   }
 
   void _onClickReset() {
@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         isFocusMode = false;
       });
       Wakelock.disable();
-      Vibration.vibrate(duration: 10);
+      HapticFeedback.lightImpact();
     }
   }
 

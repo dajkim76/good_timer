@@ -9,7 +9,13 @@ class MyRealm {
   late final Realm realm;
 
   MyRealm._internal() {
-    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 2);
+    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 3,
+        migrationCallback: (migration, oldVersion) {
+      switch (oldVersion) {
+        case 2:
+          migration.renameProperty("Pomodoro", "todayInt", "dayInt");
+      }
+    });
     realm = Realm(config);
 
     if (kDebugMode && realm.all<Task>().isEmpty) {
@@ -74,7 +80,16 @@ class MyRealm {
    */
   int getTodayPomodoroCount() {
     String todayStr = DateFormat('yyyyMMdd').format(DateTime.now());
-    return realm.query<Pomodoro>("todayInt == \$0", [int.parse(todayStr)]).length;
+    return realm.query<Pomodoro>("dayInt == $todayStr").length;
+  }
+
+  int getPomodoroCount(int dayInt) {
+    return realm.query<Pomodoro>("dayInt == $dayInt").length;
+  }
+
+  List<Pomodoro> getPomodoroList(DateTime dateTime) {
+    String dayStr = DateFormat('yyyyMMdd').format(dateTime);
+    return realm.query<Pomodoro>("dayInt == $dayStr").toList();
   }
 
   void addPomodoro(int taskId, int durationMinutes) {
@@ -107,10 +122,5 @@ class MyRealm {
     realm.write(() {
       pomodoro.memo = memo;
     });
-  }
-
-  List<Pomodoro> loadPomodoroList(DateTime dateTime) {
-    String todayStr = DateFormat('yyyyMMdd').format(dateTime);
-    return realm.query<Pomodoro>("todayInt == \$0", [int.parse(todayStr)]).toList();
   }
 }

@@ -10,9 +10,9 @@ import 'package:table_calendar/table_calendar.dart';
 
 import 'generated/l10n.dart';
 
-class Event {
-  String name;
-  Event(this.name);
+class _Event {
+  int count;
+  _Event(this.count);
 }
 
 class PomodoroPage extends StatefulWidget {
@@ -27,11 +27,12 @@ class _PomodoroState extends State<PomodoroPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
   late List<Pomodoro> _pomodoroList;
+  final Map<int, _Event> eventMap = {};
 
   @override
   void initState() {
     super.initState();
-    _pomodoroList = MyRealm.instance.loadPomodoroList(_focusedDay);
+    _pomodoroList = MyRealm.instance.getPomodoroList(_focusedDay);
     _calendarFormat = _getCalendarFormat();
     _portraitModeOnly();
   }
@@ -61,7 +62,6 @@ class _PomodoroState extends State<PomodoroPage> {
 
   @override
   Widget build(BuildContext context) {
-    final taskListProvider = context.watch<TaskListProvider>();
     return Scaffold(
         appBar: AppBar(
           title: Text(S.of(context).pomodoro_count),
@@ -76,8 +76,8 @@ class _PomodoroState extends State<PomodoroPage> {
         body: Column(children: [
           TableCalendar(
               focusedDay: _focusedDay,
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 10, 16),
+              firstDay: DateTime.now().subtract(const Duration(days: 365 * 10 + 2)),
+              lastDay: DateTime.now().add(const Duration(days: 365 * 10 + 2)),
               availableCalendarFormats: {
                 CalendarFormat.month: S.of(context).calendar_month,
                 CalendarFormat.twoWeeks: S.of(context).calendar_two_weeks,
@@ -94,14 +94,16 @@ class _PomodoroState extends State<PomodoroPage> {
                 return isSameDay(_selectedDay, day);
               },
               onDaySelected: _onDaySelected,
-              eventLoader: (day) {
-                // TODO: load monthly pomodoro list
-                // if (day.weekday == DateTime.monday) {
-                //   return [Event('Cyclic event1'), Event('Cyclic event2')];
-                // }
-
-                return [];
+              onPageChanged: (focusedDay) {
+                eventMap.clear();
               },
+              eventLoader: (day) {
+                int dayInt = toDayInt(day);
+                eventMap.putIfAbsent(dayInt, () => _Event(MyRealm.instance.getPomodoroCount(dayInt)));
+                if (eventMap[dayInt]!.count == 0) return [];
+                return [eventMap[dayInt]];
+              },
+              calendarBuilders: buildCalendarBuilders(),
               calendarStyle:
                   const CalendarStyle(markerDecoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle))),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
@@ -111,16 +113,36 @@ class _PomodoroState extends State<PomodoroPage> {
             ),
             Text(DateFormat.yMMMMd().format(_focusedDay)),
           ]),
-          Expanded(child: _buildPomodoroLost(context, taskListProvider))
+          Expanded(child: _buildPomodoroList(context))
         ]));
   }
 
+  int toDayInt(DateTime dateTime) {
+    return int.parse(DateFormat('yyyyMMdd').format(dateTime));
+  }
+
+  CalendarBuilders<dynamic> buildCalendarBuilders() {
+    return CalendarBuilders(singleMarkerBuilder: (BuildContext context, DateTime day, dynamic countInfo) {
+      int count = (countInfo as _Event).count;
+      if (count == 0) return null;
+      return Container(
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(shape: BoxShape.rectangle, color: Colors.orange), //Change color
+          width: 20.0,
+          height: 16.0,
+          child: Text(
+            count.toString(),
+            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+          ));
+    });
+  }
+
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_focusedDay, focusedDay)) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
-        _focusedDay = focusedDay; // update `_focusedDay` here as well
-        _pomodoroList = MyRealm.instance.loadPomodoroList(_focusedDay);
+        _focusedDay = selectedDay; // update `_focusedDay` here as well
+        _pomodoroList = MyRealm.instance.getPomodoroList(_focusedDay);
       });
     }
   }
@@ -157,7 +179,7 @@ class _PomodoroState extends State<PomodoroPage> {
     }
   }
 
-  Widget _buildPomodoroLost(BuildContext context, final TaskListProvider taskListProvider) {
+  Widget _buildPomodoroList(BuildContext context) {
     return _pomodoroList.isEmpty
         ? Column(
             children: [
@@ -172,7 +194,7 @@ class _PomodoroState extends State<PomodoroPage> {
             itemBuilder: (context, index) => ListTile(
                 leading: Text(
                   (index + 1).toString(),
-                  style: const TextStyle(fontSize: 20, color: Colors.white),
+                  style: const TextStyle(fontSize: 17, color: Colors.white),
                 ),
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -221,6 +243,7 @@ class _PomodoroState extends State<PomodoroPage> {
                 onPressed: () {
                   // delete
                   var taskList = context.read<TaskListProvider>();
+                  eventMap[pomodoro.dayInt]?.count--;
                   MyRealm.instance.deletePomodoro(pomodoro);
                   taskList.notifyTodayPomodoroCount();
                   setState(() {
@@ -288,6 +311,10 @@ class _PomodoroState extends State<PomodoroPage> {
                 child: Text(S.of(context).ok),
                 onPressed: () {
                   // delete
+                  if (_pomodoroList.isNotEmpty) {
+                    int dayInt = _pomodoroList[0].dayInt;
+                    eventMap[dayInt]?.count = 0;
+                  }
                   MyRealm.instance.deletePomodoroList(_pomodoroList);
                   context.read<TaskListProvider>().notifyTodayPomodoroCount();
                   setState(() {
