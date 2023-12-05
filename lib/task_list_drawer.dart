@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:good_timer/my_providers.dart';
-import 'package:good_timer/pomodo_count_icon.dart';
+import 'package:good_timer/pomodoro_count_icon.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:provider/provider.dart';
 

@@ -9,7 +9,7 @@ import 'package:good_timer/MyRealm.dart';
 import 'package:good_timer/clock_dial_painter.dart';
 import 'package:good_timer/my_native_plugin.dart';
 import 'package:good_timer/my_providers.dart';
-import 'package:good_timer/pomodo_count_icon.dart';
+import 'package:good_timer/pomodoro_count_icon.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:good_timer/task_list_drawer.dart';
 import 'package:good_timer/utils.dart';
