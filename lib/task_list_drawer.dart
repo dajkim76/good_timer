@@ -49,7 +49,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
                   : null,
               contentPadding: const EdgeInsets.all(0),
               onTap: () {
-                context.read<SettingsProvider>().setSelectedTaskId(taskList[index].id);
+                context.read<SettingsProvider>().setSelectedTask(taskList[index]);
                 Scaffold.of(context).closeEndDrawer();
               },
               leading: PomodoroCountIcon(taskList[index].pomoCount),

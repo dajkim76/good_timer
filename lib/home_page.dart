@@ -194,8 +194,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   String _getModeLabel(BuildContext context) {
     if (_timer != null && !isFocusMode) return S.of(context).in_rest;
     final settings = context.watch<SettingsProvider>();
-    var label = MyRealm.instance.getTaskName(settings.selectedTaskId);
-    if (label != null) return label;
+    var taskName = settings.selectedTaskName;
+    if (taskName != null) return taskName;
     if (_timer == null) return S.of(context).ready;
     return isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:good_timer/realm_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'MyRealm.dart';
@@ -9,12 +10,14 @@ class SettingsProvider with ChangeNotifier {
 
   bool _isPlaySound = true;
   int _selectedTaskId = 0;
+  String? _selectedTaskName;
   bool _isAnalogClock = true;
   int _calendarFormat = 0;
   bool _showHiddenTask = false;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
+  String? get selectedTaskName => _selectedTaskName;
   bool get isAnalogClock => _isAnalogClock;
   int get calendarFormat => _calendarFormat;
   bool get showHiddenTask => _showHiddenTask;
@@ -28,6 +31,7 @@ class SettingsProvider with ChangeNotifier {
     _isPlaySound = _sharedPreferences.getBool("isPlaySound") ?? true;
     _isAnalogClock = _sharedPreferences.getBool("isAnalogClock") ?? true;
     _selectedTaskId = _sharedPreferences.getInt("selectedTaskId") ?? 0;
+    _selectedTaskName = MyRealm.instance.getTaskName(_selectedTaskId);
     _calendarFormat = _sharedPreferences.getInt("calendarFormat") ?? 0;
     _showHiddenTask = _sharedPreferences.getBool("showHiddenTask") ?? false;
     notifyListeners();
@@ -45,9 +49,10 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setSelectedTaskId(int taskId) {
-    _selectedTaskId = taskId;
-    _sharedPreferences.setInt("selectedTaskId", taskId);
+  void setSelectedTask(Task task) {
+    _selectedTaskId = task.id;
+    _selectedTaskName = task.name;
+    _sharedPreferences.setInt("selectedTaskId", task.id);
     notifyListeners();
   }
 
