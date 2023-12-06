@@ -27,12 +27,14 @@ class _PomodoroState extends State<PomodoroPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
   late List<Pomodoro> _pomodoroList;
-  final Map<int, _Event> eventMap = {};
+  int _filterTaskId = 0;
+  String _filterTaskName = "";
+  final Map<int, _Event> _eventMap = {};
 
   @override
   void initState() {
     super.initState();
-    _pomodoroList = MyRealm.instance.getPomodoroList(_focusedDay);
+    _pomodoroList = MyRealm.instance.getPomodoroList(_focusedDay, _filterTaskId);
     _calendarFormat = _getCalendarFormat();
     _portraitModeOnly();
   }
@@ -65,15 +67,9 @@ class _PomodoroState extends State<PomodoroPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text(S.of(context).pomodoro_count),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.delete_forever),
-              onPressed: _onClickDeleteAll,
-              tooltip: S.of(context).delete_all,
-            )
-          ],
         ),
         body: Column(children: [
+          buildFilterWidget(),
           TableCalendar(
               focusedDay: _focusedDay,
               firstDay: DateTime.now().subtract(const Duration(days: 365 * 10 + 2)),
@@ -95,23 +91,27 @@ class _PomodoroState extends State<PomodoroPage> {
               },
               onDaySelected: _onDaySelected,
               onPageChanged: (focusedDay) {
-                eventMap.clear();
+                _eventMap.clear();
               },
               eventLoader: (day) {
                 int dayInt = toDayInt(day);
-                eventMap.putIfAbsent(dayInt, () => _Event(MyRealm.instance.getPomodoroCount(dayInt)));
-                if (eventMap[dayInt]!.count == 0) return [];
-                return [eventMap[dayInt]];
+                _eventMap.putIfAbsent(dayInt, () => _Event(MyRealm.instance.getPomodoroCount(dayInt, _filterTaskId)));
+                if (_eventMap[dayInt]!.count == 0) return [];
+                return [_eventMap[dayInt]];
               },
               calendarBuilders: buildCalendarBuilders(),
               calendarStyle:
                   const CalendarStyle(markerDecoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle))),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            Text(
-              S.of(context).pomodoro_count_fmt(_pomodoroList.length),
-              style: const TextStyle(color: Colors.deepOrange),
-            ),
             Text(DateFormat.yMMMMd().format(_focusedDay)),
+            OutlinedButton.icon(
+              onPressed: _onClickDeleteAll,
+              label: Text(
+                S.of(context).pomodoro_count_fmt(_pomodoroList.length),
+                style: const TextStyle(color: Colors.orange),
+              ),
+              icon: const Icon(Icons.delete_forever),
+            ),
           ]),
           Expanded(child: _buildPomodoroList(context))
         ]));
@@ -142,7 +142,7 @@ class _PomodoroState extends State<PomodoroPage> {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = selectedDay; // update `_focusedDay` here as well
-        _pomodoroList = MyRealm.instance.getPomodoroList(_focusedDay);
+        _pomodoroList = MyRealm.instance.getPomodoroList(_focusedDay, _filterTaskId);
       });
     }
   }
@@ -200,11 +200,12 @@ class _PomodoroState extends State<PomodoroPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(_pomodoroList[index].taskName, overflow: TextOverflow.ellipsis),
-                    Text(DateFormat('HH:mm').format(_pomodoroList[index].doneTime.toLocal()))
+                    Text(DateFormat.Hm().format(_pomodoroList[index].doneTime.toLocal()))
                   ],
                 ),
                 subtitle: _pomodoroList[index].memo?.isNotEmpty == true
-                    ? Text(_pomodoroList[index].memo!, style: const TextStyle(color: Colors.orange))
+                    ? Text(_pomodoroList[index].memo!,
+                        overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.orange))
                     : null,
                 trailing: PopupMenuButton<int>(
                   onSelected: (int menuIndex) {
@@ -243,7 +244,7 @@ class _PomodoroState extends State<PomodoroPage> {
                 onPressed: () {
                   // delete
                   var taskList = context.read<TaskListProvider>();
-                  eventMap[pomodoro.dayInt]?.count--;
+                  _eventMap[pomodoro.dayInt]?.count--;
                   MyRealm.instance.deletePomodoro(pomodoro);
                   taskList.notifyTodayPomodoroCount();
                   setState(() {
@@ -313,7 +314,7 @@ class _PomodoroState extends State<PomodoroPage> {
                   // delete
                   if (_pomodoroList.isNotEmpty) {
                     int dayInt = _pomodoroList[0].dayInt;
-                    eventMap[dayInt]?.count = 0;
+                    _eventMap[dayInt]?.count = 0;
                   }
                   MyRealm.instance.deletePomodoroList(_pomodoroList);
                   context.read<TaskListProvider>().notifyTodayPomodoroCount();
@@ -327,5 +328,63 @@ class _PomodoroState extends State<PomodoroPage> {
             ],
           );
         });
+  }
+
+  void _onClickFilter() {
+    showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(title: Text(S.of(context).tasks), content: _buildTaskList(), actions: <Widget>[
+            TextButton(
+                child: Text(S.of(context).reset),
+                onPressed: () {
+                  Navigator.pop(context);
+                  setFilterTaskList(0, "");
+                })
+          ]);
+        });
+  }
+
+  Widget _buildTaskList() {
+    final list = MyRealm.instance.loadTaskList(false);
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemBuilder: (ctx, index) {
+          return SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context);
+              setFilterTaskList(list[index].id, list[index].name);
+            },
+            child: Text(
+              list[index].name,
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+        },
+        itemCount: list.length,
+      ),
+    );
+  }
+
+  void setFilterTaskList(int filterTaskId, String filterTaskName) {
+    setState(() {
+      _filterTaskId = filterTaskId;
+      _filterTaskName = filterTaskName;
+      _eventMap.clear();
+      _pomodoroList = MyRealm.instance.getPomodoroList(_focusedDay, _filterTaskId);
+    });
+  }
+
+  Widget buildFilterWidget() {
+    return OutlinedButton.icon(
+      onPressed: _onClickFilter,
+      label: Text(
+        _filterTaskId == 0 ? S.of(context).tasks : _filterTaskName,
+        overflow: TextOverflow.ellipsis,
+      ),
+      icon: const Icon(Icons.filter_alt),
+    );
   }
 }

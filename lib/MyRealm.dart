@@ -83,13 +83,21 @@ class MyRealm {
     return realm.query<Pomodoro>("dayInt == $todayStr").length;
   }
 
-  int getPomodoroCount(int dayInt) {
-    return realm.query<Pomodoro>("dayInt == $dayInt").length;
+  int getPomodoroCount(int dayInt, int filterTaskId) {
+    if (filterTaskId == 0) {
+      return realm.query<Pomodoro>("dayInt == $dayInt").length;
+    } else {
+      return realm.query<Pomodoro>("dayInt == $dayInt and taskId == $filterTaskId").length;
+    }
   }
 
-  List<Pomodoro> getPomodoroList(DateTime dateTime) {
+  List<Pomodoro> getPomodoroList(DateTime dateTime, int filterTaskId) {
     String dayStr = DateFormat('yyyyMMdd').format(dateTime);
-    return realm.query<Pomodoro>("dayInt == $dayStr").toList();
+    if (filterTaskId == 0) {
+      return realm.query<Pomodoro>("dayInt == $dayStr").toList();
+    } else {
+      return realm.query<Pomodoro>("dayInt == $dayStr and taskId == $filterTaskId").toList();
+    }
   }
 
   void addPomodoro(int taskId, int durationMinutes) {
