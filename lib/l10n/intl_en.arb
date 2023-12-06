@@ -30,5 +30,9 @@
   "calendar_week": "Week",
   "hide": "Hide",
   "show": "Show",
-  "show_hidden_task": "Show hidden tasks"
+  "show_hidden_task": "Show hidden tasks",
+  "ignore_battery_optimization": "Ignore battery usage optimization",
+  "battery_optimization_ignored": "Optimization ignored",
+  "battery_optimization_not_ignored": "Optimization not ignored",
+  "battery_optimization_unsupported": "Optimization unsupported"
 }

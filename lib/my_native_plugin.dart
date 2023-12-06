@@ -27,4 +27,15 @@ class MyNativePlugin {
     final bool succeeded = await _channel.invokeMethod("playSound", <String, dynamic>{"extra_id": id});
     return succeeded;
   }
+
+  static Future<bool> ignoreBatteryOptimization() async {
+    final bool succeeded = await _channel.invokeMethod("ignoreBatteryOptimization");
+    return succeeded;
+  }
+
+  // result is -1: not supported, 0:not ignored, 1: ignored
+  static Future<int> isIgnoreBatteryOptimization() async {
+    final int result = await _channel.invokeMethod("isIgnoreBatteryOptimization");
+    return result;
+  }
 }

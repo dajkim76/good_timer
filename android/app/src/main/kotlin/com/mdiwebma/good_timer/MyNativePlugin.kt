@@ -3,11 +3,14 @@ package com.mdiwebma.good_timer
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
+import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.NonNull
 import io.flutter.Log
@@ -59,6 +62,15 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
             } catch (ex: Exception) {
                 result.error(ex.toString(), null, null)
             }
+        } else if (call.method == "ignoreBatteryOptimization") {
+            try {
+                ignoreBatteryOptimization()
+                result.success(true)
+            } catch (ex: Exception) {
+                result.error(ex.toString(), null, null)
+            }
+        } else if (call.method == "isIgnoreBatteryOptimization") {
+            result.success(isIgnoreBatteryOptimization());
         } else {
             result.notImplemented()
         }
@@ -134,6 +146,40 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
             return false
         }
         return true
+    }
+
+    private fun ignoreBatteryOptimization() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // not supported
+            return
+        }
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (powerManager.isIgnoringBatteryOptimizations(context.packageName)
+        ) {
+            // already ignored
+            return
+        }
+        try {
+            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+            intent.data = Uri.parse("package:" + context.packageName)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent)
+        } catch (ex: ActivityNotFoundException) {
+            throw ex
+        }
+    }
+
+    private fun isIgnoreBatteryOptimization(): Int {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return -1;
+        }
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        return if (powerManager.isIgnoringBatteryOptimizations(context.packageName)
+        ) {
+            1
+        } else {
+            0
+        }
     }
 
     companion object {
