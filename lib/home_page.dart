@@ -308,7 +308,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 tooltip: S.of(context).pomodoro_count,
               ),
               IconButton(
-                icon: const Icon(Icons.list),
+                icon: const Icon(Icons.format_list_numbered),
                 onPressed: () {
                   _key.currentState?.openEndDrawer();
                 },

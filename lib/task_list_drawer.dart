@@ -17,44 +17,47 @@ class TaskListDrawer extends StatefulWidget {
 }
 
 class _TaskListDrawerState extends State<TaskListDrawer> {
-  late List<Task> taskList;
+  late List<Task> _taskList;
 
   @override
   void initState() {
     super.initState();
     var settings = context.read<SettingsProvider>();
-    taskList = MyRealm.instance.loadTaskList(settings.showHiddenTask);
+    _taskList = MyRealm.instance.loadTaskList(settings.showHiddenTask);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width * 2 / 3,
-      color: Theme.of(context).secondaryHeaderColor,
+      color: Theme.of(context).dialogBackgroundColor,
       padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
       child: Column(
-        children: [buildHeader(context), taskList.isEmpty ? buildEmptyData(context) : Expanded(child: buildListView())],
+        children: [
+          buildHeader(context),
+          _taskList.isEmpty ? buildEmptyData(context) : Expanded(child: buildListView())
+        ],
       ),
     );
   }
 
   ListView buildListView() {
     return ListView.builder(
-        itemCount: taskList.length,
+        itemCount: _taskList.length,
         itemBuilder: (context, index) => ListTile(
               visualDensity: const VisualDensity(vertical: -4),
-              title: buildTaskTitle(taskList[index]),
-              subtitle: taskList[index].memo?.isNotEmpty == true
-                  ? Text(taskList[index].memo!,
+              title: buildTaskTitle(_taskList[index]),
+              subtitle: _taskList[index].memo?.isNotEmpty == true
+                  ? Text(_taskList[index].memo!,
                       overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.orange))
                   : null,
               contentPadding: const EdgeInsets.all(0),
               onTap: () {
-                context.read<SettingsProvider>().setSelectedTask(taskList[index]);
+                context.read<SettingsProvider>().setSelectedTask(_taskList[index]);
                 Scaffold.of(context).closeEndDrawer();
               },
-              leading: PomodoroCountIcon(taskList[index].pomoCount),
-              trailing: buildPopupMenuButton(taskList[index]),
+              leading: PomodoroCountIcon(_taskList[index].pomoCount),
+              trailing: buildPopupMenuButton(_taskList[index]),
             ));
   }
 
@@ -141,7 +144,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
     settings.setShowHiddenTask(showHiddenTask);
 
     setState(() {
-      taskList = MyRealm.instance.loadTaskList(showHiddenTask);
+      _taskList = MyRealm.instance.loadTaskList(showHiddenTask);
     });
   }
 
@@ -150,7 +153,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
     if (name?.isNotEmpty == true) {
       Task newTask = MyRealm.instance.addTask(name!);
       setState(() {
-        taskList.add(newTask);
+        _taskList.add(newTask);
       });
     }
   }
@@ -197,7 +200,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
                 onPressed: () {
                   MyRealm.instance.deleteTask(task);
                   setState(() {
-                    taskList.remove(task);
+                    _taskList.remove(task);
                   });
                   Navigator.pop(context);
                 },
