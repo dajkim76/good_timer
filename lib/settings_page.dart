@@ -41,7 +41,15 @@ class _SettingsState extends State<SettingsPage> {
                 },
                 initialValue: settingsProvider.isPlaySound,
                 leading: const Icon(Icons.surround_sound),
-                title: Text(S.of(context).playSound),
+                title: Text(S.of(context).sound_when_pomodoro_done),
+              ),
+              SettingsTile.switchTile(
+                onToggle: (value) {
+                  settingsProvider.setVibration(value);
+                },
+                initialValue: settingsProvider.isVibration,
+                leading: const Icon(Icons.vibration),
+                title: Text(S.of(context).vibration_when_pomodoro_done),
               ),
               SettingsTile.switchTile(
                 onToggle: (value) {

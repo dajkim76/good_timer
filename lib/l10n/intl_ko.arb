@@ -10,7 +10,7 @@
   "ready" : "준비",
   "be_focus": "업무에 집중하세요~",
   "in_rest" : "휴식중... ^^",
-  "playSound": "소리내기",
+  "sound_when_pomodoro_done": "포모도로 완료시 소리내기",
   "pressAgainToExit": "종료하려면 한 번 더 누르세요",
   "tasks": "작업 목록",
   "add_task": "작업 추가",
@@ -34,5 +34,6 @@
   "ignore_battery_optimization": "배터리 최적화 앱에서 제외시키기",
   "battery_optimization_ignored": "최적화 앱에서 제외됨",
   "battery_optimization_not_ignored": "죄적화 앱에서 제외되지 않음",
-  "battery_optimization_unsupported": "최적화 지원하지 않음"
+  "battery_optimization_unsupported": "최적화 지원하지 않음",
+  "vibration_when_pomodoro_done": "포모도로 완료시 진동하기"
 }

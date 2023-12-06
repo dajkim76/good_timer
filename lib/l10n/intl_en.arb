@@ -10,7 +10,7 @@
   "ready" : "Ready~",
   "be_focus": "Be focus",
   "in_rest" : "Break time :)",
-  "playSound": "Play sound",
+  "sound_when_pomodoro_done": "Play sound when Pomodoro is done",
   "pressAgainToExit": "Press again to exit.",
   "tasks": "Tasks",
   "add_task": "Add task",
@@ -34,5 +34,6 @@
   "ignore_battery_optimization": "Ignore battery usage optimization",
   "battery_optimization_ignored": "Optimization ignored",
   "battery_optimization_not_ignored": "Optimization not ignored",
-  "battery_optimization_unsupported": "Optimization unsupported"
+  "battery_optimization_unsupported": "Optimization unsupported",
+  "vibration_when_pomodoro_done": "Vibration when Pomodoro is done"
 }

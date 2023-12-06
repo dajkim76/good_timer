@@ -153,7 +153,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       if (isFocusMode) {
         MyRealm.instance.addPomodoro(context.read<SettingsProvider>().selectedTaskId, 25);
         context.read<TaskListProvider>().notifyTodayPomodoroCount();
-        Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
+        if (context.read<SettingsProvider>().isVibration) {
+          Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
+        }
       }
       setState(() {
         isFocusMode = !isFocusMode;

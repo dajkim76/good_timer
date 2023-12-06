@@ -14,6 +14,7 @@ class SettingsProvider with ChangeNotifier {
   bool _isAnalogClock = true;
   int _calendarFormat = 0;
   bool _showHiddenTask = false;
+  bool _isVibration = false;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
@@ -21,6 +22,7 @@ class SettingsProvider with ChangeNotifier {
   bool get isAnalogClock => _isAnalogClock;
   int get calendarFormat => _calendarFormat;
   bool get showHiddenTask => _showHiddenTask;
+  bool get isVibration => _isVibration;
 
   SettingsProvider() {
     loadFromSharedPref();
@@ -34,6 +36,7 @@ class SettingsProvider with ChangeNotifier {
     _selectedTaskName = MyRealm.instance.getTaskName(_selectedTaskId);
     _calendarFormat = _sharedPreferences.getInt("calendarFormat") ?? 0;
     _showHiddenTask = _sharedPreferences.getBool("showHiddenTask") ?? false;
+    _isVibration = _sharedPreferences.getBool("isVibration") ?? false;
     notifyListeners();
   }
 
@@ -64,6 +67,12 @@ class SettingsProvider with ChangeNotifier {
   void setShowHiddenTask(bool showHiddenTask) {
     _showHiddenTask = showHiddenTask;
     _sharedPreferences.setBool("showHiddenTask", showHiddenTask);
+    notifyListeners();
+  }
+
+  void setVibration(bool isVibration) {
+    _isVibration = isVibration;
+    _sharedPreferences.setBool("isVibration", isVibration);
     notifyListeners();
   }
 }
