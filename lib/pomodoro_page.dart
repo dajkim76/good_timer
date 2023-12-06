@@ -205,7 +205,7 @@ class _PomodoroState extends State<PomodoroPage> {
                 ),
                 subtitle: _pomodoroList[index].memo?.isNotEmpty == true
                     ? Text(_pomodoroList[index].memo!,
-                        overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.orange))
+                        overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue))
                     : null,
                 trailing: PopupMenuButton<int>(
                   onSelected: (int menuIndex) {

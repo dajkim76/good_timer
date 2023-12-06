@@ -49,7 +49,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
               title: buildTaskTitle(_taskList[index]),
               subtitle: _taskList[index].memo?.isNotEmpty == true
                   ? Text(_taskList[index].memo!,
-                      overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.orange))
+                      overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue))
                   : null,
               contentPadding: const EdgeInsets.all(0),
               onTap: () {

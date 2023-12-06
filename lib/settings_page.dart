@@ -15,6 +15,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsState extends State<SettingsPage> {
   int _batteryIgnoredStatus = -1;
+  static const kFontSize = 17.0;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _SettingsState extends State<SettingsPage> {
         title: Text(S.of(context).settings),
       ),
       body: Padding(
-        padding: EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(3.0),
         child: SettingsList(
           sections: [
             SettingsSection(title: null, tiles: <SettingsTile>[
@@ -41,7 +42,10 @@ class _SettingsState extends State<SettingsPage> {
                 },
                 initialValue: settingsProvider.isPlaySound,
                 leading: const Icon(Icons.surround_sound),
-                title: Text(S.of(context).sound_when_pomodoro_done),
+                title: Text(
+                  S.of(context).sound_when_pomodoro_done,
+                  style: const TextStyle(fontSize: kFontSize),
+                ),
               ),
               SettingsTile.switchTile(
                 onToggle: (value) {
@@ -49,7 +53,10 @@ class _SettingsState extends State<SettingsPage> {
                 },
                 initialValue: settingsProvider.isVibration,
                 leading: const Icon(Icons.vibration),
-                title: Text(S.of(context).vibration_when_pomodoro_done),
+                title: Text(
+                  S.of(context).vibration_when_pomodoro_done,
+                  style: const TextStyle(fontSize: kFontSize),
+                ),
               ),
               SettingsTile.switchTile(
                 onToggle: (value) {
@@ -57,12 +64,21 @@ class _SettingsState extends State<SettingsPage> {
                 },
                 initialValue: settingsProvider.isAnalogClock,
                 leading: const Icon(Icons.alarm),
-                title: Text(S.of(context).show_analog_clock),
+                title: Text(
+                  S.of(context).show_analog_clock,
+                  style: const TextStyle(fontSize: kFontSize),
+                ),
               ),
               SettingsTile.navigation(
-                title: Text(S.of(context).ignore_battery_optimization),
+                title: Text(
+                  S.of(context).ignore_battery_optimization,
+                  style: const TextStyle(fontSize: kFontSize),
+                ),
                 leading: const Icon(Icons.battery_5_bar),
-                description: Text(_getBatteryIgnoredStatusMsg()),
+                description: Text(
+                  _getBatteryIgnoredStatusMsg(),
+                  style: const TextStyle(color: Colors.blue),
+                ),
                 onPressed: (context) async {
                   await MyNativePlugin.ignoreBatteryOptimization();
                   queryBatteryIgnoredStatus();
