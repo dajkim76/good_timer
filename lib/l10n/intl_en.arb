@@ -45,5 +45,6 @@
   "minutes_fmt": "{minute} min",
   "sort_by_name": "Sort by name",
   "stop_pomodoro_first": "Stop the Pomodoro first",
-  "check_the_range": "Check the range"
+  "check_the_range": "Check the range",
+  "open_play_store_page": "Open Play Store page"
 }

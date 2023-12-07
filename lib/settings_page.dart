@@ -128,6 +128,24 @@ class _SettingsState extends State<SettingsPage> {
                       }
                       queryBatteryIgnoredStatus();
                     },
+                  ),
+                  SettingsTile.navigation(
+                    title: Text(
+                      S.of(context).open_play_store_page,
+                      style: const TextStyle(fontSize: kFontSize),
+                    ),
+                    leading: const Icon(Icons.store),
+                    description: FutureBuilder<String>(
+                        future: MyNativePlugin.getAppVersionName(),
+                        builder: (context, snapshot) {
+                          return Text(
+                            snapshot.requireData,
+                            style: const TextStyle(color: Colors.blue),
+                          );
+                        }),
+                    onPressed: (context) async {
+                      MyNativePlugin.openAppMarketPage();
+                    },
                   )
                 ])
           ],

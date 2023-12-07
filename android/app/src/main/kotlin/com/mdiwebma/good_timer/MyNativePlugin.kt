@@ -13,19 +13,25 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.core.content.ContextCompat.startActivity
 import io.flutter.Log
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
+
 class MyNativePlugin: FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
     private lateinit var channel : MethodChannel
     private var focusPlayer: MediaPlayer? = null
     private var restPlayer: MediaPlayer? = null
+    private var activity: Activity? = null
+
+    fun setActivity(activity: Activity) {
+        this.activity = activity
+    }
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
@@ -34,8 +40,14 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        if (call.method == "getPlatformVersion") {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
+        if (call.method == "getAppVersionName") {
+            try {
+                val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                val versionName = packageInfo.versionName
+                result.success(versionName)
+            } catch (ex: Exception) {
+                result.error(ex.toString(), null, null)
+            }
         } else if (call.method == "setAlarm") {
             try {
                 val id = call.argument<Int>("extra_id")!!
@@ -70,7 +82,14 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
                 result.error(ex.toString(), null, null)
             }
         } else if (call.method == "isIgnoreBatteryOptimization") {
-            result.success(isIgnoreBatteryOptimization());
+            result.success(isIgnoreBatteryOptimization())
+        } else if (call.method == "openAppMarketPage") {
+            try {
+                openAppMarketPage()
+                result.success(true)
+            }catch (ex: Exception) {
+                result.error(ex.toString(), null, null)
+            }
         } else {
             result.notImplemented()
         }
@@ -78,13 +97,14 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        activity = null
         try {
             focusPlayer?.release()
             restPlayer?.release()
             cancelAlarm(1)
         }catch (ex: Exception) {
-            Log.e(TAG, ex.toString())
-            Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show()
+            Log.e(TAG, ex.toString(), ex)
+            showErrorToast(context, ex)
         }
     }
 
@@ -162,8 +182,12 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
         try {
             val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
             intent.data = Uri.parse("package:" + context.packageName)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent)
+            if (activity != null) {
+                activity?.startActivity(intent)
+            } else {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent)
+            }
             return 0
         } catch (ex: ActivityNotFoundException) {
             throw ex
@@ -180,6 +204,17 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
             1
         } else {
             0
+        }
+    }
+
+    fun openAppMarketPage() {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("market://details?id=com.mdiwebma.good_timer")
+            activity?.startActivity(intent)
+        } catch (ex: ActivityNotFoundException) {
+            Log.e(TAG, ex.toString(), ex)
+            throw  ex
         }
     }
 
@@ -229,7 +264,7 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
                 context.startActivity(intent)
                 return true
             }catch (ex: Exception) {
-                showErrorToast(context, ex)
+                Log.e(TAG, ex.toString(), ex)
                 return false
             }
         }

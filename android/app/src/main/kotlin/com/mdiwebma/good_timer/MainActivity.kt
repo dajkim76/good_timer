@@ -32,6 +32,8 @@ class MainActivity: FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        flutterEngine.plugins.add(MyNativePlugin())
+        val myNativePlugin = MyNativePlugin()
+        myNativePlugin.setActivity(this)
+        flutterEngine.plugins.add(myNativePlugin)
     }
 }
