@@ -73,12 +73,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     _longBreakTimeMinutes = _settings.longBreakTime;
   }
 
-  void _playSound() async {
-    if (!_settings.isPlaySound) return;
-    if (_isFocusMode) {
-      MyNativePlugin.playSound(0);
-    } else {
-      MyNativePlugin.playSound(1);
+  void _setAlarmSoundVibration() async {
+    if (_settings.isPlaySound) {
+      if (_isFocusMode) {
+        MyNativePlugin.playSound(0);
+      } else {
+        MyNativePlugin.playSound(1);
+      }
+    }
+    if (_settings.isVibration) {
+      Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
     }
   }
 
@@ -168,15 +172,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     DateTime now = DateTime.now();
     int remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_startedTime)).inSeconds;
     if (remainSeconds <= 0) {
-      _playSound();
+      _setAlarmSoundVibration();
       _updatePomodoroMinutes();
       if (_isFocusMode) {
         _pomodoroCount++;
         MyRealm.instance.addPomodoro(_settings.selectedTaskId, 25);
         context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
-        if (_settings.isVibration) {
-          Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
-        }
       }
       setState(() {
         _isFocusMode = !_isFocusMode;
