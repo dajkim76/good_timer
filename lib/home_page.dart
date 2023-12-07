@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   int _getModeSeconds() {
     int seconds = kDebugMode ? 1 : 60;
-    if (_timer == null) {
+    if (_timerState == TimerState.stop) {
       return _settings.focusTime * seconds;
     }
     if (_isFocusMode) {
@@ -360,7 +360,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     : CustomPaint(
                         size: Size(MediaQuery.of(context).size.height / 3, MediaQuery.of(context).size.height / 3),
                         painter: ClockDialPainter(_timerState == TimerState.stop
-                            ? (_remainSecondsNotifier..value = settings.focusTime)
+                            ? (_remainSecondsNotifier..value = _getModeSeconds())
                             : _remainSecondsNotifier),
                       ),
                 Row(
