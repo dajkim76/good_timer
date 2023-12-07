@@ -15,6 +15,9 @@ class SettingsProvider with ChangeNotifier {
   int _calendarFormat = 0;
   bool _showHiddenTask = false;
   bool _isVibration = false;
+  int _focusTime = 25;
+  int _shortBreakTime = 5;
+  int _longBreakTime = 15;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
@@ -23,6 +26,9 @@ class SettingsProvider with ChangeNotifier {
   int get calendarFormat => _calendarFormat;
   bool get showHiddenTask => _showHiddenTask;
   bool get isVibration => _isVibration;
+  int get focusTime => _focusTime;
+  int get shortBreakTime => _shortBreakTime;
+  int get longBreakTime => _longBreakTime;
 
   SettingsProvider() {
     loadFromSharedPref();
@@ -37,6 +43,9 @@ class SettingsProvider with ChangeNotifier {
     _calendarFormat = _sharedPreferences.getInt("calendarFormat") ?? 0;
     _showHiddenTask = _sharedPreferences.getBool("showHiddenTask") ?? false;
     _isVibration = _sharedPreferences.getBool("isVibration") ?? false;
+    _focusTime = _sharedPreferences.getInt("focusTime") ?? 25;
+    _shortBreakTime = _sharedPreferences.getInt("shortBreakTime") ?? 5;
+    _longBreakTime = _sharedPreferences.getInt("longBreakTime") ?? 15;
     notifyListeners();
   }
 
@@ -73,6 +82,24 @@ class SettingsProvider with ChangeNotifier {
   void setVibration(bool isVibration) {
     _isVibration = isVibration;
     _sharedPreferences.setBool("isVibration", isVibration);
+    notifyListeners();
+  }
+
+  void setFocusTime(int focusTime) {
+    _focusTime = focusTime;
+    _sharedPreferences.setInt("focusTime", focusTime);
+    notifyListeners();
+  }
+
+  void setShortBreakTime(int shortBreakTime) {
+    _shortBreakTime = shortBreakTime;
+    _sharedPreferences.setInt("shortBreakTime", shortBreakTime);
+    notifyListeners();
+  }
+
+  void setLongBreakTime(int longBreakTime) {
+    _longBreakTime = longBreakTime;
+    _sharedPreferences.setInt("longBreakTime", longBreakTime);
     notifyListeners();
   }
 }

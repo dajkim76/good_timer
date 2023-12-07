@@ -36,5 +36,11 @@
   "battery_optimization_not_ignored": "Optimization not ignored",
   "battery_optimization_unsupported": "Optimization unsupported",
   "vibration_when_pomodoro_done": "Vibration when Pomodoro is done",
-  "all_tasks": "All tasks"
+  "all_tasks": "All tasks",
+  "pomodoro": "Pomodoro",
+  "general": "General",
+  "focus_time": "Focus time",
+  "short_break": "Short break",
+  "long_break": "Long break",
+  "minutes_fmt": "{minute} minutes"
 }
