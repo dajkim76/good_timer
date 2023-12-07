@@ -38,7 +38,7 @@ class _SettingsState extends State<SettingsPage> {
           sections: [
             SettingsSection(
                 title: Text(S.of(context).pomodoro,
-                    style: const TextStyle(fontSize: 17, color: Colors.teal, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(fontSize: 17, color: Colors.orange, fontWeight: FontWeight.bold)),
                 tiles: <SettingsTile>[
                   SettingsTile(
                       leading: const Icon(Icons.alarm),
@@ -82,7 +82,7 @@ class _SettingsState extends State<SettingsPage> {
                 ]),
             SettingsSection(
                 title: Text(S.of(context).general,
-                    style: const TextStyle(fontSize: 17, color: Colors.teal, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(fontSize: 17, color: Colors.orange, fontWeight: FontWeight.bold)),
                 tiles: <SettingsTile>[
                   SettingsTile.switchTile(
                     onToggle: (value) {

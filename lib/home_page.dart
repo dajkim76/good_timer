@@ -292,12 +292,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: Scaffold(
           key: _key,
           appBar: AppBar(
+            titleSpacing: 0,
             // Here we take the value from the MyHomePage object that was created by
             // the App.build method, and use it to set our appbar title.
-            title: Text(
-              S.of(context).appName,
-              style: const TextStyle(fontSize: 17),
-            ),
+            title: Text(S.of(context).appName),
             // 명시적으로 페이지 종료버튼을 추가
             leading: IconButton(
               icon: const Icon(Icons.close),

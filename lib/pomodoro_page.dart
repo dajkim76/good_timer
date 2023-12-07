@@ -133,7 +133,7 @@ class _PomodoroState extends State<PomodoroPage> {
           height: 18.0,
           child: Text(
             count.toString(),
-            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
           ));
     });
   }
