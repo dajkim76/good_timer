@@ -37,13 +37,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Timer? _timer;
   static const int kFocusSeconds = kDebugMode ? 10 : 25 * 60;
   static const int kBreakSeconds = kDebugMode ? 5 : 5 * 60;
-  bool isFocusMode = false;
-  DateTime? backKeyPressedTime;
-  DateTime startedTime = DateTime.now();
-  Duration timerDuration = Duration.zero;
-  TimerState timerState = TimerState.stop;
+  bool _isFocusMode = false;
+  DateTime? _backKeyPressedTime;
+  DateTime _startedTime = DateTime.now();
+  Duration _timerDuration = Duration.zero;
+  TimerState _timerState = TimerState.stop;
   final GlobalKey<ScaffoldState> _key = GlobalKey(); // for open drawer
-  final ValueNotifier<int> remainSecondsNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<int> _remainSecondsNotifier = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     if (kDebugMode) {
       MyNativePlugin.platformVersion.then((value) => Fluttertoast.showToast(msg: value));
     }
-    remainSecondsNotifier.value = _getModeSeconds();
+    _remainSecondsNotifier.value = _getModeSeconds();
   }
 
   @override
@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void _playSound() async {
     var settings = context.read<SettingsProvider>();
     if (!settings.isPlaySound) return;
-    if (isFocusMode) {
+    if (_isFocusMode) {
       MyNativePlugin.playSound(0);
     } else {
       MyNativePlugin.playSound(1);
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   int _getModeSeconds() {
     if (_timer == null) return kFocusSeconds;
-    return isFocusMode ? kFocusSeconds : kBreakSeconds;
+    return _isFocusMode ? kFocusSeconds : kBreakSeconds;
   }
 
   void _onClickStart() {
@@ -84,13 +84,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       _timer = Timer.periodic(const Duration(milliseconds: 100), _onTimer);
       MyNativePlugin.cancelAlarm(1);
       setState(() {
-        timerState = TimerState.play;
-        timerDuration = Duration.zero;
-        isFocusMode = true;
-        startedTime = DateTime.now();
+        _timerState = TimerState.play;
+        _timerDuration = Duration.zero;
+        _isFocusMode = true;
+        _startedTime = DateTime.now();
         final remainSeconds = _getModeSeconds();
-        remainSecondsNotifier.value = remainSeconds;
-        int rtcTimeMillis = startedTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
+        _remainSecondsNotifier.value = remainSeconds;
+        int rtcTimeMillis = _startedTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
       });
@@ -102,9 +102,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void _onClickPause() {
     assert(_timer != null);
     setState(() {
-      timerState = TimerState.pause;
-      timerDuration = timerDuration + DateTime.now().difference(startedTime);
-      startedTime = DateTime.now();
+      _timerState = TimerState.pause;
+      _timerDuration = _timerDuration + DateTime.now().difference(_startedTime);
+      _startedTime = DateTime.now();
     });
     Future future = MyNativePlugin.cancelAlarm(1);
     handleError(future);
@@ -115,10 +115,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void _onClickResume() {
     assert(_timer != null);
     setState(() {
-      timerState = TimerState.play;
-      startedTime = DateTime.now();
-      Duration remainDuration = Duration(seconds: _getModeSeconds()) - timerDuration;
-      int rtcTimeMillis = startedTime.add(remainDuration).millisecondsSinceEpoch;
+      _timerState = TimerState.play;
+      _startedTime = DateTime.now();
+      Duration remainDuration = Duration(seconds: _getModeSeconds()) - _timerDuration;
+      int rtcTimeMillis = _startedTime.add(remainDuration).millisecondsSinceEpoch;
       Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
       handleError(future);
     });
@@ -134,9 +134,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       Future future = MyNativePlugin.cancelAlarm(1);
       handleError(future);
       setState(() {
-        remainSecondsNotifier.value = _getModeSeconds();
-        timerState = TimerState.stop;
-        isFocusMode = false;
+        _remainSecondsNotifier.value = _getModeSeconds();
+        _timerState = TimerState.stop;
+        _isFocusMode = false;
       });
       Wakelock.disable();
       HapticFeedback.lightImpact();
@@ -144,13 +144,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _onTimer(Timer timer) {
-    if (timerState != TimerState.play) return;
+    if (_timerState != TimerState.play) return;
 
     DateTime now = DateTime.now();
-    int remainSeconds = _getModeSeconds() - (timerDuration + now.difference(startedTime)).inSeconds;
+    int remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_startedTime)).inSeconds;
     if (remainSeconds <= 0) {
       _playSound();
-      if (isFocusMode) {
+      if (_isFocusMode) {
         MyRealm.instance.addPomodoro(context.read<SettingsProvider>().selectedTaskId, 25);
         context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
         if (context.read<SettingsProvider>().isVibration) {
@@ -158,17 +158,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         }
       }
       setState(() {
-        isFocusMode = !isFocusMode;
-        startedTime = DateTime.now();
-        timerDuration = Duration.zero;
-        int rtcTimeMillis = startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
+        _isFocusMode = !_isFocusMode;
+        _startedTime = DateTime.now();
+        _timerDuration = Duration.zero;
+        int rtcTimeMillis = _startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
       });
     } else {
       setState(() {
         // update Ui
-        remainSecondsNotifier.value = remainSeconds;
+        _remainSecondsNotifier.value = remainSeconds;
         print("remainSeconds=$remainSeconds");
       });
     }
@@ -177,11 +177,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   String _getRemainTimeText() {
     int remainSeconds;
     if (_timer != null) {
-      if (timerState == TimerState.pause) {
-        remainSeconds = _getModeSeconds() - timerDuration.inSeconds;
+      if (_timerState == TimerState.pause) {
+        remainSeconds = _getModeSeconds() - _timerDuration.inSeconds;
       } else {
         DateTime now = DateTime.now();
-        remainSeconds = _getModeSeconds() - (timerDuration + now.difference(startedTime)).inSeconds;
+        remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_startedTime)).inSeconds;
       }
     } else {
       remainSeconds = _getModeSeconds();
@@ -198,17 +198,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   String _getModeLabel(BuildContext context) {
-    if (_timer != null && !isFocusMode) return S.of(context).in_rest;
+    if (_timer != null && !_isFocusMode) return S.of(context).in_rest;
     final settings = context.watch<SettingsProvider>();
     var taskName = settings.selectedTaskName;
     if (taskName != null) return taskName;
     if (_timer == null) return S.of(context).ready;
-    return isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
+    return _isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
   }
 
   Color _getModeLabelColor() {
     if (_timer == null) return Colors.grey;
-    return isFocusMode ? Colors.green : Colors.grey;
+    return _isFocusMode ? Colors.green : Colors.grey;
   }
 
   void _onClickSettings() {
@@ -240,7 +240,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         tooltip: S.of(context).start,
       ));
     } else {
-      if (timerState == TimerState.play) {
+      if (_timerState == TimerState.play) {
         // pause
         buttons.add(IconButton(
           icon: const Icon(
@@ -251,7 +251,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           onPressed: _onClickPause,
           tooltip: S.of(context).pause,
         ));
-      } else if (timerState == TimerState.pause) {
+      } else if (_timerState == TimerState.pause) {
         // resume
         buttons.add(IconButton(
           icon: const Icon(
@@ -326,11 +326,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 !settings.isAnalogClock
                     ? Text(
                         _getRemainTimeText(),
-                        style: TextStyle(fontSize: 100, color: (isFocusMode ? Colors.yellow : Colors.grey)),
+                        style: TextStyle(fontSize: 100, color: (_isFocusMode ? Colors.yellow : Colors.grey)),
                       )
                     : CustomPaint(
                         size: Size(MediaQuery.of(context).size.height / 3, MediaQuery.of(context).size.height / 3),
-                        painter: ClockDialPainter(remainSecondsNotifier),
+                        painter: ClockDialPainter(_remainSecondsNotifier),
                       ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -343,7 +343,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           drawerDragStartBehavior: DragStartBehavior.start,
         ),
         onWillPop: () {
-          if (timerState != TimerState.stop) {
+          if (_timerState != TimerState.stop) {
             showToast(S.of(context).stop_pomodoro_first);
             return Future.value(false);
           }
@@ -362,7 +362,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            if (timerState != TimerState.stop) {
+            if (_timerState != TimerState.stop) {
               showToast(S.of(context).stop_pomodoro_first);
             } else {
               SystemNavigator.pop();
