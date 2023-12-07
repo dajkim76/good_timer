@@ -343,12 +343,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           drawerDragStartBehavior: DragStartBehavior.start,
         ),
         onWillPop: () {
-          if (_timer == null) return Future.value(true);
-          if (backKeyPressedTime == null || DateTime.now().difference(backKeyPressedTime!).inSeconds >= 2) {
-            backKeyPressedTime = DateTime.now();
-            Fluttertoast.showToast(msg: S.of(context).pressAgainToExit);
+          if (timerState != TimerState.stop) {
+            showToast(S.of(context).stop_pomodoro_first);
             return Future.value(false);
           }
+
           return Future.value(true);
         });
   }
@@ -361,12 +360,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       title: Text(S.of(context).appName),
       // 명시적으로 페이지 종료버튼을 추가
       leading: IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: () => {
-          // TODO: check iOS
-          SystemNavigator.pop()
-        },
-      ),
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            if (timerState != TimerState.stop) {
+              showToast(S.of(context).stop_pomodoro_first);
+            } else {
+              SystemNavigator.pop();
+            }
+          }),
       actions: <Widget>[
         IconButton(
           icon: PomodoroCountIcon(pomodoroCount.todayPomodoroCount),

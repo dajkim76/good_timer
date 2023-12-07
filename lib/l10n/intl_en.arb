@@ -42,6 +42,7 @@
   "focus_time": "Focus time",
   "short_break": "Short break",
   "long_break": "Long break",
-  "minutes_fmt": "{minute} minutes",
-  "sort_by_name": "Sort by name"
+  "minutes_fmt": "{minute} min",
+  "sort_by_name": "Sort by name",
+  "stop_pomodoro_first": "Stop the Pomodoro first"
 }

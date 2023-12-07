@@ -43,5 +43,6 @@
   "short_break": "짧은 휴식",
   "long_break": "긴 휴식",
   "minutes_fmt": "{minute} 분",
-  "sort_by_name": "이름순으로 정열"
+  "sort_by_name": "이름순으로 정열",
+  "stop_pomodoro_first": "먼저 뽀모도로를 중지하세요"
 }

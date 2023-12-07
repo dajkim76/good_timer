@@ -80,7 +80,7 @@ class _PomodoroState extends State<PomodoroPage> {
                 CalendarFormat.week: S.of(context).calendar_week,
               },
               calendarFormat: _calendarFormat,
-              rowHeight: CalendarFormat.week == _calendarFormat ? 80 : 52,
+              rowHeight: CalendarFormat.month != _calendarFormat ? 80 : 52,
               onFormatChanged: (format) {
                 _setCalendarFormat(format);
                 setState(() {
