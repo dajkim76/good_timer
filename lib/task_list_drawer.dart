@@ -189,6 +189,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
             title: Text(title),
             content: TextField(
               controller: textFieldController,
+              autofocus: true,
             ),
             actions: <Widget>[
               TextButton(

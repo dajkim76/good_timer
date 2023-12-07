@@ -225,7 +225,10 @@ class _SettingsState extends State<SettingsPage> {
         builder: (context) {
           return AlertDialog(
             title: Text(title),
-            content: TextField(controller: _textFieldController),
+            content: TextField(
+              controller: _textFieldController,
+              autofocus: true,
+            ),
             actions: <Widget>[
               TextButton(
                 child: Text(S.of(context).cancel),

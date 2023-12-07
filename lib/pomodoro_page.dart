@@ -267,8 +267,10 @@ class _PomodoroState extends State<PomodoroPage> {
     });
   }
 
+  final _textFieldController = TextEditingController();
+
   Future<String?> _showTextInputDialog(BuildContext context, {String text = ""}) async {
-    final textFieldController = TextEditingController()..text = text;
+    _textFieldController.text = text;
 
     return showDialog(
         context: context,
@@ -276,7 +278,8 @@ class _PomodoroState extends State<PomodoroPage> {
           return AlertDialog(
             title: Text(S.of(context).memo),
             content: TextField(
-              controller: textFieldController,
+              controller: _textFieldController,
+              autofocus: true,
             ),
             actions: <Widget>[
               TextButton(
@@ -285,7 +288,7 @@ class _PomodoroState extends State<PomodoroPage> {
               ),
               TextButton(
                 child: Text(S.of(context).ok),
-                onPressed: () => Navigator.pop(context, textFieldController.text),
+                onPressed: () => Navigator.pop(context, _textFieldController.text),
               ),
             ],
           );
