@@ -35,15 +35,17 @@ enum TimerState { stop, play, pause }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   Timer? _timer;
-  static const int kFocusSeconds = kDebugMode ? 10 : 25 * 60;
-  static const int kBreakSeconds = kDebugMode ? 5 : 5 * 60;
   bool _isFocusMode = false;
-  DateTime? _backKeyPressedTime;
   DateTime _startedTime = DateTime.now();
   Duration _timerDuration = Duration.zero;
   TimerState _timerState = TimerState.stop;
   final GlobalKey<ScaffoldState> _key = GlobalKey(); // for open drawer
   final ValueNotifier<int> _remainSecondsNotifier = ValueNotifier<int>(0);
+  int _pomodoroCount = 0; // check for long break time
+  late int _focusTimeMinutes;
+  late int _shortBreakTimeMinutes;
+  late int _longBreakTimeMinutes;
+  late SettingsProvider _settings;
 
   @override
   void initState() {
@@ -53,6 +55,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     if (kDebugMode) {
       MyNativePlugin.platformVersion.then((value) => Fluttertoast.showToast(msg: value));
     }
+    _settings = context.read<SettingsProvider>();
+    _updatePomodoroMinutes();
     _remainSecondsNotifier.value = _getModeSeconds();
   }
 
@@ -63,9 +67,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
+  void _updatePomodoroMinutes() {
+    _focusTimeMinutes = _settings.focusTime;
+    _shortBreakTimeMinutes = _settings.shortBreakTime;
+    _longBreakTimeMinutes = _settings.longBreakTime;
+  }
+
   void _playSound() async {
-    var settings = context.read<SettingsProvider>();
-    if (!settings.isPlaySound) return;
+    if (!_settings.isPlaySound) return;
     if (_isFocusMode) {
       MyNativePlugin.playSound(0);
     } else {
@@ -74,8 +83,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   int _getModeSeconds() {
-    if (_timer == null) return kFocusSeconds;
-    return _isFocusMode ? kFocusSeconds : kBreakSeconds;
+    int seconds = kDebugMode ? 1 : 60;
+    if (_timer == null) {
+      return _settings.focusTime * seconds;
+    }
+    if (_isFocusMode) {
+      return _focusTimeMinutes * seconds;
+    } else {
+      return (_pomodoroCount % 4) == 0 ? _longBreakTimeMinutes * seconds : _shortBreakTimeMinutes * seconds;
+    }
   }
 
   void _onClickStart() {
@@ -83,6 +99,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     if (_timer == null) {
       _timer = Timer.periodic(const Duration(milliseconds: 100), _onTimer);
       MyNativePlugin.cancelAlarm(1);
+      _updatePomodoroMinutes();
       setState(() {
         _timerState = TimerState.play;
         _timerDuration = Duration.zero;
@@ -133,6 +150,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       _timer = null;
       Future future = MyNativePlugin.cancelAlarm(1);
       handleError(future);
+      _pomodoroCount = 0;
+      _updatePomodoroMinutes();
       setState(() {
         _remainSecondsNotifier.value = _getModeSeconds();
         _timerState = TimerState.stop;
@@ -150,10 +169,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     int remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_startedTime)).inSeconds;
     if (remainSeconds <= 0) {
       _playSound();
+      _updatePomodoroMinutes();
       if (_isFocusMode) {
-        MyRealm.instance.addPomodoro(context.read<SettingsProvider>().selectedTaskId, 25);
+        _pomodoroCount++;
+        MyRealm.instance.addPomodoro(_settings.selectedTaskId, 25);
         context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
-        if (context.read<SettingsProvider>().isVibration) {
+        if (_settings.isVibration) {
           Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
         }
       }
@@ -166,11 +187,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         handleError(future);
       });
     } else {
-      setState(() {
-        // update Ui
-        _remainSecondsNotifier.value = remainSeconds;
-        print("remainSeconds=$remainSeconds");
-      });
+      if (_remainSecondsNotifier.value != remainSeconds) {
+        setState(() {
+          // update Ui
+          _remainSecondsNotifier.value = remainSeconds;
+        });
+      }
     }
   }
 
@@ -197,10 +219,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return "$min:$sec";
   }
 
-  String _getModeLabel(BuildContext context) {
+  String _getModeLabel() {
     if (_timer != null && !_isFocusMode) return S.of(context).in_rest;
-    final settings = context.watch<SettingsProvider>();
-    var taskName = settings.selectedTaskName;
+    var taskName = _settings.selectedTaskName;
     if (taskName != null) return taskName;
     if (_timer == null) return S.of(context).ready;
     return _isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
@@ -208,7 +229,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   Color _getModeLabelColor() {
     if (_timer == null) return Colors.grey;
-    return _isFocusMode ? Colors.green : Colors.grey;
+    if (_isFocusMode) {
+      if (_timerState == TimerState.play) {
+        return Colors.green;
+      } else {
+        return Colors.greenAccent;
+      }
+    } else {
+      return Colors.grey;
+    }
   }
 
   void _onClickSettings() {
@@ -313,7 +342,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               children: <Widget>[
                 TextButton(
                   child: Text(
-                    _getModeLabel(context),
+                    _getModeLabel(),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                     maxLines: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 1,
@@ -330,7 +359,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       )
                     : CustomPaint(
                         size: Size(MediaQuery.of(context).size.height / 3, MediaQuery.of(context).size.height / 3),
-                        painter: ClockDialPainter(_remainSecondsNotifier),
+                        painter: ClockDialPainter(_timerState == TimerState.stop
+                            ? (_remainSecondsNotifier..value = settings.focusTime)
+                            : _remainSecondsNotifier),
                       ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

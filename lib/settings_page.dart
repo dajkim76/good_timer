@@ -49,9 +49,7 @@ class _SettingsState extends State<SettingsPage> {
                           min: 5.0,
                           max: 60.0,
                           onChanged: (newValue) {
-                            setState(() {
-                              settings.setFocusTime(newValue.round());
-                            });
+                            settings.setFocusTime(newValue.round());
                           })),
                   SettingsTile(
                       leading: const Icon(Icons.alarm),
@@ -62,9 +60,7 @@ class _SettingsState extends State<SettingsPage> {
                           min: 5,
                           max: 30,
                           onChanged: (newValue) {
-                            setState(() {
-                              settings.setShortBreakTime(newValue.round());
-                            });
+                            settings.setShortBreakTime(newValue.round());
                           })),
                   SettingsTile(
                       leading: const Icon(Icons.alarm),
@@ -75,9 +71,7 @@ class _SettingsState extends State<SettingsPage> {
                           min: 5,
                           max: 30,
                           onChanged: (newValue) {
-                            setState(() {
-                              settings.setLongBreakTime(newValue.round());
-                            });
+                            settings.setLongBreakTime(newValue.round());
                           }))
                 ]),
             SettingsSection(
