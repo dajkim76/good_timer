@@ -179,11 +179,14 @@ class _SettingsState extends State<SettingsPage> {
                 style: const TextStyle(color: Colors.blue),
               ),
               onPressed: () async {
+                String rangeErrorMsg = S.of(context).check_the_range;
                 String? result = await _showTextInputDialog(context, title, value.round().toString());
                 if (result?.isNotEmpty == true) {
                   int? newValue = int.tryParse(result!);
                   if (newValue != null && newValue >= min && newValue <= max) {
                     onChanged(newValue.toDouble());
+                  } else {
+                    showToast(rangeErrorMsg);
                   }
                 }
               }),
