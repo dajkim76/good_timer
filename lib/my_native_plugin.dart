@@ -28,9 +28,10 @@ class MyNativePlugin {
     return succeeded;
   }
 
-  static Future<bool> ignoreBatteryOptimization() async {
-    final bool succeeded = await _channel.invokeMethod("ignoreBatteryOptimization");
-    return succeeded;
+  // result is -1: not supported, 0:launched page, 1:ignored
+  static Future<int> ignoreBatteryOptimization() async {
+    final int result = await _channel.invokeMethod("ignoreBatteryOptimization");
+    return result;
   }
 
   // result is -1: not supported, 0:not ignored, 1: ignored

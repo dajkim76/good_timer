@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:good_timer/my_native_plugin.dart';
 import 'package:good_timer/my_providers.dart';
+import 'package:good_timer/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -76,11 +77,14 @@ class _SettingsState extends State<SettingsPage> {
                 ),
                 leading: const Icon(Icons.battery_5_bar),
                 description: Text(
-                  _getBatteryIgnoredStatusMsg(),
+                  _getBatteryIgnoredMsg(),
                   style: const TextStyle(color: Colors.blue),
                 ),
                 onPressed: (context) async {
-                  await MyNativePlugin.ignoreBatteryOptimization();
+                  int status = await MyNativePlugin.ignoreBatteryOptimization();
+                  if (status != 0) {
+                    showToast(_getBatteryIgnoredMsgByStatus(status));
+                  }
                   queryBatteryIgnoredStatus();
                 },
               )
@@ -97,8 +101,8 @@ class _SettingsState extends State<SettingsPage> {
     );
   }
 
-  String _getBatteryIgnoredStatusMsg() {
-    switch (_batteryIgnoredStatus) {
+  String _getBatteryIgnoredMsgByStatus(int status) {
+    switch (status) {
       case 1:
         return S.of(context).battery_optimization_ignored;
       case 0:
@@ -106,6 +110,10 @@ class _SettingsState extends State<SettingsPage> {
       default:
         return S.of(context).battery_optimization_unsupported;
     }
+  }
+
+  String _getBatteryIgnoredMsg() {
+    return _getBatteryIgnoredMsgByStatus(_batteryIgnoredStatus);
   }
 
   void queryBatteryIgnoredStatus() {

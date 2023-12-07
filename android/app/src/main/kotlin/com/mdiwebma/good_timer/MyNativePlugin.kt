@@ -64,8 +64,8 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
             }
         } else if (call.method == "ignoreBatteryOptimization") {
             try {
-                ignoreBatteryOptimization()
-                result.success(true)
+                val retValue = ignoreBatteryOptimization()
+                result.success(retValue)
             } catch (ex: Exception) {
                 result.error(ex.toString(), null, null)
             }
@@ -148,22 +148,23 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
         return true
     }
 
-    private fun ignoreBatteryOptimization() {
+    private fun ignoreBatteryOptimization(): Int {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             // not supported
-            return
+            return -1
         }
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         if (powerManager.isIgnoringBatteryOptimizations(context.packageName)
         ) {
             // already ignored
-            return
+            return 1
         }
         try {
             val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
             intent.data = Uri.parse("package:" + context.packageName)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent)
+            return 0
         } catch (ex: ActivityNotFoundException) {
             throw ex
         }
