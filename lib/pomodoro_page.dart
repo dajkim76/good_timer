@@ -80,6 +80,7 @@ class _PomodoroState extends State<PomodoroPage> {
                 CalendarFormat.week: S.of(context).calendar_week,
               },
               calendarFormat: _calendarFormat,
+              rowHeight: CalendarFormat.week == _calendarFormat ? 80 : 52,
               onFormatChanged: (format) {
                 _setCalendarFormat(format);
                 setState(() {
@@ -129,7 +130,7 @@ class _PomodoroState extends State<PomodoroPage> {
           alignment: Alignment.center,
           decoration: const BoxDecoration(shape: BoxShape.rectangle, color: Colors.orange), //Change color
           width: 20.0,
-          height: 16.0,
+          height: 18.0,
           child: Text(
             count.toString(),
             style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
@@ -336,7 +337,12 @@ class _PomodoroState extends State<PomodoroPage> {
         builder: (BuildContext context) {
           return AlertDialog(title: Text(S.of(context).tasks), content: _buildTaskList(), actions: <Widget>[
             TextButton(
-                child: Text(S.of(context).reset),
+                child: Text(S.of(context).cancel),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            TextButton(
+                child: Text(S.of(context).all_tasks),
                 onPressed: () {
                   Navigator.pop(context);
                   setFilterTaskList(0, "");
@@ -381,7 +387,7 @@ class _PomodoroState extends State<PomodoroPage> {
     return OutlinedButton.icon(
       onPressed: _onClickFilter,
       label: Text(
-        _filterTaskId == 0 ? S.of(context).tasks : _filterTaskName,
+        _filterTaskId == 0 ? S.of(context).all_tasks : _filterTaskName,
         overflow: TextOverflow.ellipsis,
       ),
       icon: const Icon(Icons.filter_alt),

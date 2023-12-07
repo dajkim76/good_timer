@@ -35,5 +35,6 @@
   "battery_optimization_ignored": "Optimization ignored",
   "battery_optimization_not_ignored": "Optimization not ignored",
   "battery_optimization_unsupported": "Optimization unsupported",
-  "vibration_when_pomodoro_done": "Vibration when Pomodoro is done"
+  "vibration_when_pomodoro_done": "Vibration when Pomodoro is done",
+  "all_tasks": "All tasks"
 }

@@ -35,5 +35,6 @@
   "battery_optimization_ignored": "최적화 앱에서 제외됨",
   "battery_optimization_not_ignored": "죄적화 앱에서 제외되지 않음",
   "battery_optimization_unsupported": "최적화 지원하지 않음",
-  "vibration_when_pomodoro_done": "뽀모도로 완료시 진동하기"
+  "vibration_when_pomodoro_done": "뽀모도로 완료시 진동하기",
+  "all_tasks": "모든 작업"
 }
