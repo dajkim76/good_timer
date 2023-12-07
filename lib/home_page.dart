@@ -5,10 +5,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:good_timer/MyRealm.dart';
 import 'package:good_timer/clock_dial_painter.dart';
 import 'package:good_timer/my_native_plugin.dart';
 import 'package:good_timer/my_providers.dart';
+import 'package:good_timer/my_realm.dart';
 import 'package:good_timer/pomodoro_count_icon.dart';
 import 'package:good_timer/settings_page.dart';
 import 'package:good_timer/task_list_drawer.dart';
@@ -20,20 +20,20 @@ import 'package:wakelock/wakelock.dart';
 import 'generated/l10n.dart';
 import 'pomodoro_page.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 enum TimerState { stop, play, pause }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   Timer? _timer;
   static const int kFocusSeconds = kDebugMode ? 10 : 25 * 60;
   static const int kBreakSeconds = kDebugMode ? 5 : 5 * 60;
@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       _playSound();
       if (isFocusMode) {
         MyRealm.instance.addPomodoro(context.read<SettingsProvider>().selectedTaskId, 25);
-        context.read<TaskListProvider>().notifyTodayPomodoroCount();
+        context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
         if (context.read<SettingsProvider>().isVibration) {
           Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
         }
@@ -223,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     ));
   }
 
-  List<Widget> _buildButtons(BuildContext context) {
+  List<Widget> _buildStartStopButtons(BuildContext context) {
     const kSize = 80.0;
     const kColor = Colors.white;
 
@@ -281,7 +281,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
-    final taskList = context.watch<TaskListProvider>();
+    final pomodoroCount = context.watch<PomodoroCountProvider>();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -291,39 +291,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return WillPopScope(
         child: Scaffold(
           key: _key,
-          appBar: AppBar(
-            titleSpacing: 0,
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
-            title: Text(S.of(context).appName),
-            // 명시적으로 페이지 종료버튼을 추가
-            leading: IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => {
-                // TODO: check iOS
-                SystemNavigator.pop()
-              },
-            ),
-            actions: <Widget>[
-              IconButton(
-                icon: PomodoroCountIcon(taskList.todayPomodoroCount),
-                onPressed: _onClickPomodoro,
-                tooltip: S.of(context).pomodoro_count,
-              ),
-              IconButton(
-                icon: const Icon(Icons.format_list_numbered),
-                onPressed: () {
-                  _key.currentState?.openEndDrawer();
-                },
-                tooltip: S.of(context).tasks,
-              ),
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: _onClickSettings,
-                tooltip: S.of(context).settings,
-              ),
-            ],
-          ),
+          appBar: buildAppBar(context, pomodoroCount),
           body: Center(
             // Center is a layout widget. It takes a single child and positions it
             // in the middle of the parent.
@@ -366,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: _buildButtons(context),
+                  children: _buildStartStopButtons(context),
                 )
               ],
             ),
@@ -383,5 +351,41 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           }
           return Future.value(true);
         });
+  }
+
+  AppBar buildAppBar(BuildContext context, PomodoroCountProvider pomodoroCount) {
+    return AppBar(
+      titleSpacing: 0,
+      // Here we take the value from the MyHomePage object that was created by
+      // the App.build method, and use it to set our appbar title.
+      title: Text(S.of(context).appName),
+      // 명시적으로 페이지 종료버튼을 추가
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () => {
+          // TODO: check iOS
+          SystemNavigator.pop()
+        },
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: PomodoroCountIcon(pomodoroCount.todayPomodoroCount),
+          onPressed: _onClickPomodoro,
+          tooltip: S.of(context).pomodoro_count,
+        ),
+        IconButton(
+          icon: const Icon(Icons.format_list_numbered),
+          onPressed: () {
+            _key.currentState?.openEndDrawer();
+          },
+          tooltip: S.of(context).tasks,
+        ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: _onClickSettings,
+          tooltip: S.of(context).settings,
+        ),
+      ],
+    );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'MyRealm.dart';
+import 'my_realm.dart';
 
 // 시간이 다 됬을 때, 소리로 알림 여부
 class SettingsProvider with ChangeNotifier {
@@ -104,11 +104,11 @@ class SettingsProvider with ChangeNotifier {
   }
 }
 
-class TaskListProvider with ChangeNotifier {
+class PomodoroCountProvider with ChangeNotifier {
   int _todayPomodoroCount = 0;
   int get todayPomodoroCount => _todayPomodoroCount;
 
-  TaskListProvider() {
+  PomodoroCountProvider() {
     notifyTodayPomodoroCount();
   }
 

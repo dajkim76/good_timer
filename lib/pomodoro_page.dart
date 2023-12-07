@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:good_timer/MyRealm.dart';
 import 'package:good_timer/my_providers.dart';
+import 'package:good_timer/my_realm.dart';
 import 'package:good_timer/realm_models.dart';
 import 'package:good_timer/utils.dart';
 import 'package:intl/intl.dart';
@@ -244,10 +244,9 @@ class _PomodoroState extends State<PomodoroPage> {
                 child: Text(S.of(context).ok),
                 onPressed: () {
                   // delete
-                  var taskList = context.read<TaskListProvider>();
                   _eventMap[pomodoro.dayInt]?.count--;
                   MyRealm.instance.deletePomodoro(pomodoro);
-                  taskList.notifyTodayPomodoroCount();
+                  context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
                   setState(() {
                     _pomodoroList.remove(pomodoro);
                   });
@@ -318,7 +317,7 @@ class _PomodoroState extends State<PomodoroPage> {
                     _eventMap[dayInt]?.count = 0;
                   }
                   MyRealm.instance.deletePomodoroList(_pomodoroList);
-                  context.read<TaskListProvider>().notifyTodayPomodoroCount();
+                  context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
                   setState(() {
                     _pomodoroList.clear();
                   });

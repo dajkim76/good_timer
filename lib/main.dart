@@ -9,7 +9,7 @@ import 'home_page.dart';
 void main() {
   runApp(
     MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_) => TaskListProvider()),
+      ChangeNotifierProvider(create: (_) => PomodoroCountProvider()),
       ChangeNotifierProvider(create: (_) => SettingsProvider())
     ], child: const MyApp()),
   );
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(useMaterial3: true),
       theme: ThemeData.light(useMaterial3: true),
       themeMode: ThemeMode.dark,
-      home: const MyHomePage(),
+      home: const HomePage(),
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
