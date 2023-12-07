@@ -29,12 +29,17 @@ class MyRealm {
   /**
    * Task
    */
-  List<Task> loadTaskList(bool showAllTask) {
+  List<Task> getTaskList(bool showAllTask, bool sortByName) {
+    final List<Task> result;
     if (showAllTask) {
-      return realm.all<Task>().toList();
+      result = realm.all<Task>().toList();
     } else {
-      return realm.query<Task>("isHidden = false").toList();
+      result = realm.query<Task>("isHidden = false").toList();
     }
+    if (sortByName) {
+      result.sort((t1, t2) => t1.name.compareTo(t2.name));
+    }
+    return result;
   }
 
   String? getTaskName(int id) {

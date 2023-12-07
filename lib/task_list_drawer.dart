@@ -23,7 +23,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
   void initState() {
     super.initState();
     var settings = context.read<SettingsProvider>();
-    _taskList = MyRealm.instance.loadTaskList(settings.showHiddenTask);
+    _taskList = MyRealm.instance.getTaskList(settings.showHiddenTask, settings.sortByTaskName);
   }
 
   @override
@@ -79,7 +79,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
           icon: const Icon(Icons.add),
           label: Text(S.of(context).add_task)),
       PopupMenuButton<int>(
-        onSelected: onClickShowHiddenTask,
+        onSelected: onClickHeaderMoreMenu,
         itemBuilder: (BuildContext context) {
           return [
             PopupMenuItem(
@@ -88,7 +88,18 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
                 context.read<SettingsProvider>().showHiddenTask
                     ? const Icon(Icons.check_box_outlined)
                     : const Icon(Icons.check_box_outline_blank),
+                const SizedBox(width: 5),
                 Text(S.of(context).show_hidden_task)
+              ]),
+            ),
+            PopupMenuItem(
+              value: 1,
+              child: Row(children: [
+                context.read<SettingsProvider>().sortByTaskName
+                    ? const Icon(Icons.check_box_outlined)
+                    : const Icon(Icons.check_box_outline_blank),
+                const SizedBox(width: 5),
+                Text(S.of(context).sort_by_name)
               ]),
             )
           ];
@@ -138,14 +149,24 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
     );
   }
 
-  void onClickShowHiddenTask(int _) {
-    var settings = context.read<SettingsProvider>();
-    bool showHiddenTask = !settings.showHiddenTask;
-    settings.setShowHiddenTask(showHiddenTask);
+  void onClickHeaderMoreMenu(int index) {
+    if (index == 0) {
+      var settings = context.read<SettingsProvider>();
+      bool showHiddenTask = !settings.showHiddenTask;
+      settings.setShowHiddenTask(showHiddenTask);
 
-    setState(() {
-      _taskList = MyRealm.instance.loadTaskList(showHiddenTask);
-    });
+      setState(() {
+        _taskList = MyRealm.instance.getTaskList(settings.showHiddenTask, settings.sortByTaskName);
+      });
+    } else if (index == 1) {
+      var settings = context.read<SettingsProvider>();
+      bool sortByTaskName = !settings.sortByTaskName;
+      settings.setSortByTaskName(sortByTaskName);
+
+      setState(() {
+        _taskList = MyRealm.instance.getTaskList(settings.showHiddenTask, settings.sortByTaskName);
+      });
+    }
   }
 
   void onClickAddTask(BuildContext context) async {

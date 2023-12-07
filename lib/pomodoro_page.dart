@@ -351,7 +351,8 @@ class _PomodoroState extends State<PomodoroPage> {
   }
 
   Widget _buildTaskList() {
-    final list = MyRealm.instance.loadTaskList(false);
+    final settings = context.read<SettingsProvider>();
+    final list = MyRealm.instance.getTaskList(settings.showHiddenTask, settings.sortByTaskName);
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: ListView.builder(

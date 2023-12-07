@@ -14,6 +14,7 @@ class SettingsProvider with ChangeNotifier {
   bool _isAnalogClock = true;
   int _calendarFormat = 0;
   bool _showHiddenTask = false;
+  bool _sortByTaskName = false;
   bool _isVibration = false;
   int _focusTime = 25;
   int _shortBreakTime = 5;
@@ -25,6 +26,7 @@ class SettingsProvider with ChangeNotifier {
   bool get isAnalogClock => _isAnalogClock;
   int get calendarFormat => _calendarFormat;
   bool get showHiddenTask => _showHiddenTask;
+  bool get sortByTaskName => _sortByTaskName;
   bool get isVibration => _isVibration;
   int get focusTime => _focusTime;
   int get shortBreakTime => _shortBreakTime;
@@ -42,6 +44,7 @@ class SettingsProvider with ChangeNotifier {
     _selectedTaskName = MyRealm.instance.getTaskName(_selectedTaskId);
     _calendarFormat = _sharedPreferences.getInt("calendarFormat") ?? 0;
     _showHiddenTask = _sharedPreferences.getBool("showHiddenTask") ?? false;
+    _sortByTaskName = _sharedPreferences.getBool("sortByTaskName") ?? false;
     _isVibration = _sharedPreferences.getBool("isVibration") ?? false;
     _focusTime = _sharedPreferences.getInt("focusTime") ?? 25;
     _shortBreakTime = _sharedPreferences.getInt("shortBreakTime") ?? 5;
@@ -76,6 +79,12 @@ class SettingsProvider with ChangeNotifier {
   void setShowHiddenTask(bool showHiddenTask) {
     _showHiddenTask = showHiddenTask;
     _sharedPreferences.setBool("showHiddenTask", showHiddenTask);
+    notifyListeners();
+  }
+
+  void setSortByTaskName(bool sortByTaskName) {
+    _sortByTaskName = sortByTaskName;
+    _sharedPreferences.setBool("sortByTaskName", sortByTaskName);
     notifyListeners();
   }
 

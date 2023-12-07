@@ -71,7 +71,7 @@ class _SettingsState extends State<SettingsPage> {
                       title: buildSliderTile(
                           title: S.of(context).long_break,
                           value: settings.longBreakTime.toDouble(),
-                          activeColor: Colors.green,
+                          activeColor: Colors.greenAccent,
                           min: 5,
                           max: 30,
                           onChanged: (newValue) {
