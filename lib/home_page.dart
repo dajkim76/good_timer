@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     HapticFeedback.lightImpact();
   }
 
-  void _onClickReset() {
+  void _onClickStop() {
     assert(_timer != null);
     if (_timer != null) {
       _timer?.cancel();
@@ -293,15 +293,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ));
       }
 
-      // reset
+      // stop
       buttons.add(IconButton(
         icon: const Icon(
           Icons.cancel_outlined,
           size: kSize,
           color: kColor,
         ),
-        onPressed: _onClickReset,
-        tooltip: S.of(context).reset,
+        onPressed: _onClickStop,
+        tooltip: S.of(context).stop,
       ));
     }
     return buttons;

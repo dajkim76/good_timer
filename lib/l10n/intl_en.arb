@@ -6,7 +6,7 @@
   "start": "Start",
   "pause": "Pause",
   "resume": "Resume",
-  "reset": "Reset",
+  "stop": "Stop",
   "ready" : "Ready~",
   "be_focus": "Be focus",
   "in_rest" : "Break time :)",
