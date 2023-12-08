@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'generated/l10n.dart';
+
 void showAlertDialog(BuildContext context, String title, String message) {
   showDialog(
       context: context,
@@ -26,4 +28,31 @@ extension ListUtils<T> on List<T> {
     }
     return sum;
   }
+}
+
+/// String? newValue = await showInputDialog(...);
+/// if newValue is null, dialog canceled
+Future<String?> showInputDialog(BuildContext context, TextEditingController textEditingController, String title,
+    {String text = ""}) async {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: textEditingController,
+            autofocus: true,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(S.of(context).cancel),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text(S.of(context).ok),
+              onPressed: () => Navigator.pop(context, textEditingController.text),
+            ),
+          ],
+        );
+      });
 }

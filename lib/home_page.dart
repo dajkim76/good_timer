@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   late int _shortBreakTimeMinutes;
   late int _longBreakTimeMinutes;
   late SettingsProvider _settings;
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -62,6 +63,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    _textEditingController.dispose();
     _timer?.cancel();
     MyNativePlugin.cancelAlarm(1); // TODO 타이밍 이슈 있음
     super.dispose();
@@ -175,7 +177,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       _setAlarmSoundVibration();
       if (_isFocusMode) {
         _pomodoroCount++;
-        MyRealm.instance.addPomodoro(_settings.selectedTaskId, _focusTimeMinutes);
+        MyRealm.instance.addPomodoro(_settings.instantTaskName, _settings.selectedTaskId, _focusTimeMinutes);
         context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
       }
       _updatePomodoroMinutes();
@@ -222,8 +224,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   String _getModeLabel() {
     if (_timer != null && !_isFocusMode) return S.of(context).in_rest;
+
+    // check instant task name
+    var instantTaskName = _settings.instantTaskName;
+    if (instantTaskName?.isNotEmpty == true) {
+      return instantTaskName!;
+    }
+    // check task
     var taskName = _settings.selectedTaskName;
-    if (taskName != null) return taskName;
+    if (taskName?.isNotEmpty == true) {
+      return taskName!;
+    }
+
     if (_timer == null) return S.of(context).ready;
     return _isFocusMode ? S.of(context).be_focus : S.of(context).in_rest;
   }
@@ -251,6 +263,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => const PomodoroPage(),
     ));
+  }
+
+  void _onClickTaskName() async {
+    _textEditingController.text = "";
+    String? newValue = await showInputDialog(context, _textEditingController, S.of(context).instant_task_name);
+    if (newValue?.isNotEmpty == true) {
+      _settings.setInstantTaskName(newValue!);
+    }
   }
 
   List<Widget> _buildStartStopButtons(BuildContext context) {
@@ -349,9 +369,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     maxLines: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 1,
                     style: TextStyle(color: _getModeLabelColor(), fontSize: 40, fontWeight: FontWeight.bold),
                   ),
-                  onPressed: () {
-                    _key.currentState?.openEndDrawer();
-                  },
+                  onPressed: _onClickTaskName,
                 ),
                 !settings.isAnalogClock
                     ? Text(

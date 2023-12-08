@@ -107,13 +107,25 @@ class MyRealm {
     }
   }
 
-  void addPomodoro(int taskId, int focusTimeMinutes) {
-    var task = realm.find<Task>(taskId);
-    var taskName = task?.name ?? "";
-    var memo = task?.memo;
-    if (taskName.isEmpty == true) {
-      taskId = -1;
-      taskName = "No name";
+  void addPomodoro(String? instantTaskName, int taskId, int focusTimeMinutes) {
+    final String taskName;
+    final String? memo;
+    Task? task;
+
+    if (instantTaskName?.isNotEmpty == true) {
+      taskId = 0;
+      taskName = instantTaskName!;
+      memo = null;
+    } else {
+      task = realm.find<Task>(taskId);
+      if (task != null) {
+        taskName = task.name;
+        memo = task.memo;
+      } else {
+        taskId = 0;
+        taskName = "No task name";
+        memo = null;
+      }
     }
 
     realm.write(() {

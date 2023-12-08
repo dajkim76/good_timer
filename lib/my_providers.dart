@@ -19,6 +19,7 @@ class SettingsProvider with ChangeNotifier {
   int _focusTime = 25;
   int _shortBreakTime = 5;
   int _longBreakTime = 15;
+  String? _instantTaskName;
 
   bool get isPlaySound => _isPlaySound;
   int get selectedTaskId => _selectedTaskId;
@@ -31,6 +32,7 @@ class SettingsProvider with ChangeNotifier {
   int get focusTime => _focusTime;
   int get shortBreakTime => _shortBreakTime;
   int get longBreakTime => _longBreakTime;
+  String? get instantTaskName => _instantTaskName;
 
   SettingsProvider() {
     loadFromSharedPref();
@@ -49,6 +51,7 @@ class SettingsProvider with ChangeNotifier {
     _focusTime = _sharedPreferences.getInt("focusTime") ?? 25;
     _shortBreakTime = _sharedPreferences.getInt("shortBreakTime") ?? 5;
     _longBreakTime = _sharedPreferences.getInt("longBreakTime") ?? 15;
+    _instantTaskName = _sharedPreferences.getString("instantTaskName") ?? "";
     notifyListeners();
   }
 
@@ -65,6 +68,9 @@ class SettingsProvider with ChangeNotifier {
   }
 
   void setSelectedTask(Task task) {
+    _instantTaskName = null;
+    _sharedPreferences.setString("instantTaskName", "");
+
     _selectedTaskId = task.id;
     _selectedTaskName = task.name;
     _sharedPreferences.setInt("selectedTaskId", task.id);
@@ -109,6 +115,17 @@ class SettingsProvider with ChangeNotifier {
   void setLongBreakTime(int longBreakTime) {
     _longBreakTime = longBreakTime;
     _sharedPreferences.setInt("longBreakTime", longBreakTime);
+    notifyListeners();
+  }
+
+  void setInstantTaskName(String instantTaskName) {
+    _instantTaskName = instantTaskName;
+    _sharedPreferences.setString("instantTaskName", instantTaskName);
+
+    // reset selected taskId
+    _selectedTaskId = 0;
+    _selectedTaskName = null;
+    _sharedPreferences.setInt("selectedTaskId", 0);
     notifyListeners();
   }
 }

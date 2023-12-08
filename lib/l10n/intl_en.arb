@@ -42,10 +42,11 @@
   "focus_time": "Focus time",
   "short_break": "Short break",
   "long_break": "Long break",
-  "minutes_fmt": "{minute}min",
+  "minutes_fmt": "{minute} min",
   "sort_by_name": "Sort by name",
   "stop_pomodoro_first": "Stop the Pomodoro first",
   "check_the_range": "Check the range",
   "rate_this_app": "Rate this app",
-  "select_task": "Select task"
+  "select_task": "Select task",
+  "instant_task_name": "Instant task name"
 }
