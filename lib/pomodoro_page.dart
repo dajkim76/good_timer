@@ -30,6 +30,7 @@ class _PomodoroState extends State<PomodoroPage> {
   int _filterTaskId = 0;
   String _filterTaskName = "";
   final Map<int, _Event> _eventMap = {};
+  final _textFieldController = TextEditingController();
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _PomodoroState extends State<PomodoroPage> {
   @override
   void dispose() {
     _enableRotation();
+    _textFieldController.dispose();
     super.dispose();
   }
 
@@ -275,8 +277,6 @@ class _PomodoroState extends State<PomodoroPage> {
       MyRealm.instance.updatePomodoroMemo(pomodoro, memo);
     });
   }
-
-  final _textFieldController = TextEditingController();
 
   Future<String?> _showTextInputDialog(BuildContext context, {String text = ""}) async {
     _textFieldController.text = text;

@@ -18,12 +18,19 @@ class TaskListDrawer extends StatefulWidget {
 
 class _TaskListDrawerState extends State<TaskListDrawer> {
   late List<Task> _taskList;
+  final _textFieldController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     var settings = context.read<SettingsProvider>();
     _taskList = MyRealm.instance.getTaskList(settings.showHiddenTask, settings.sortByTaskName);
+  }
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    super.dispose();
   }
 
   @override
@@ -189,7 +196,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
   }
 
   Future<String?> _showTextInputDialog(BuildContext context, String title, {String text = ""}) async {
-    final textFieldController = TextEditingController()..text = text;
+    _textFieldController.text = text;
 
     return showDialog(
         context: context,
@@ -197,7 +204,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
           return AlertDialog(
             title: Text(title),
             content: TextField(
-              controller: textFieldController,
+              controller: _textFieldController,
               autofocus: true,
             ),
             actions: <Widget>[
@@ -207,7 +214,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
               ),
               TextButton(
                 child: Text(S.of(context).ok),
-                onPressed: () => Navigator.pop(context, textFieldController.text),
+                onPressed: () => Navigator.pop(context, _textFieldController.text),
               ),
             ],
           );

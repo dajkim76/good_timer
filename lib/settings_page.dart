@@ -16,12 +16,19 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsState extends State<SettingsPage> {
   int _batteryIgnoredStatus = -1;
+  final TextEditingController _textFieldController = TextEditingController();
   static const kFontSize = 15.0;
 
   @override
   void initState() {
     super.initState();
     queryBatteryIgnoredStatus();
+  }
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    super.dispose();
   }
 
   @override
@@ -236,8 +243,6 @@ class _SettingsState extends State<SettingsPage> {
       ],
     );
   }
-
-  final TextEditingController _textFieldController = TextEditingController();
 
   Future<String?> _showTextInputDialog(BuildContext context, String title, String value) async {
     _textFieldController.text = value;
