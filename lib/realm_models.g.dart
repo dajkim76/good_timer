@@ -102,7 +102,9 @@ class Pomodoro extends _Pomodoro
     int dayInt,
     int taskId,
     String taskName,
-    DateTime doneTime,
+    DateTime startTime,
+    DateTime endTime,
+    bool isDone,
     int focusTimeMinutes, {
     String? memo,
     String? extra,
@@ -111,7 +113,9 @@ class Pomodoro extends _Pomodoro
     RealmObjectBase.set(this, 'dayInt', dayInt);
     RealmObjectBase.set(this, 'taskId', taskId);
     RealmObjectBase.set(this, 'taskName', taskName);
-    RealmObjectBase.set(this, 'doneTime', doneTime);
+    RealmObjectBase.set(this, 'startTime', startTime);
+    RealmObjectBase.set(this, 'endTime', endTime);
+    RealmObjectBase.set(this, 'isDone', isDone);
     RealmObjectBase.set(this, 'focusTimeMinutes', focusTimeMinutes);
     RealmObjectBase.set(this, 'memo', memo);
     RealmObjectBase.set(this, 'extra', extra);
@@ -141,10 +145,22 @@ class Pomodoro extends _Pomodoro
   set taskName(String value) => throw RealmUnsupportedSetError();
 
   @override
-  DateTime get doneTime =>
-      RealmObjectBase.get<DateTime>(this, 'doneTime') as DateTime;
+  DateTime get startTime =>
+      RealmObjectBase.get<DateTime>(this, 'startTime') as DateTime;
   @override
-  set doneTime(DateTime value) => RealmObjectBase.set(this, 'doneTime', value);
+  set startTime(DateTime value) =>
+      RealmObjectBase.set(this, 'startTime', value);
+
+  @override
+  DateTime get endTime =>
+      RealmObjectBase.get<DateTime>(this, 'endTime') as DateTime;
+  @override
+  set endTime(DateTime value) => RealmObjectBase.set(this, 'endTime', value);
+
+  @override
+  bool get isDone => RealmObjectBase.get<bool>(this, 'isDone') as bool;
+  @override
+  set isDone(bool value) => RealmObjectBase.set(this, 'isDone', value);
 
   @override
   int get focusTimeMinutes =>
@@ -179,7 +195,9 @@ class Pomodoro extends _Pomodoro
       SchemaProperty('dayInt', RealmPropertyType.int),
       SchemaProperty('taskId', RealmPropertyType.int),
       SchemaProperty('taskName', RealmPropertyType.string),
-      SchemaProperty('doneTime', RealmPropertyType.timestamp),
+      SchemaProperty('startTime', RealmPropertyType.timestamp),
+      SchemaProperty('endTime', RealmPropertyType.timestamp),
+      SchemaProperty('isDone', RealmPropertyType.bool),
       SchemaProperty('focusTimeMinutes', RealmPropertyType.int),
       SchemaProperty('memo', RealmPropertyType.string, optional: true),
       SchemaProperty('extra', RealmPropertyType.string, optional: true),

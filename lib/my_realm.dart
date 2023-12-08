@@ -9,13 +9,15 @@ class MyRealm {
   late final Realm realm;
 
   MyRealm._internal() {
-    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 4,
+    var config = Configuration.local([Task.schema, Pomodoro.schema], schemaVersion: 5,
         migrationCallback: (migration, oldVersion) {
       switch (oldVersion) {
         case 2:
           migration.renameProperty("Pomodoro", "todayInt", "dayInt");
         case 3:
           migration.renameProperty("Pomodoro", "durationMinutes", "focusTimeMinutes");
+        case 4:
+          migration.renameProperty("Pomodoro", "doneTime", "endTime");
       }
     });
     realm = Realm(config);
@@ -107,7 +109,7 @@ class MyRealm {
     }
   }
 
-  void addPomodoro(String? instantTaskName, int taskId, int focusTimeMinutes) {
+  void addPomodoro(DateTime startTime, String? instantTaskName, int taskId, int focusTimeMinutes) {
     final String taskName;
     final String? memo;
     Task? task;
@@ -130,9 +132,10 @@ class MyRealm {
 
     realm.write(() {
       if (task != null) task.pomoCount = task.pomoCount + 1;
-      var now = DateTime.now();
-      String todayStr = DateFormat('yyyyMMdd').format(now);
-      realm.add(Pomodoro(now.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, now, focusTimeMinutes,
+      var endTime = DateTime.now();
+      String todayStr = DateFormat('yyyyMMdd').format(endTime);
+      realm.add(Pomodoro(endTime.millisecondsSinceEpoch, int.parse(todayStr), taskId, taskName, startTime, endTime,
+          true, focusTimeMinutes,
           memo: memo));
     });
   }

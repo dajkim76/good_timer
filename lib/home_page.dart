@@ -36,6 +36,7 @@ enum TimerState { stop, play, pause }
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   Timer? _timer;
   bool _isFocusMode = false;
+  DateTime _startTime = DateTime.now();
   DateTime _resumeTime = DateTime.now();
   Duration _timerDuration = Duration.zero;
   TimerState _timerState = TimerState.stop;
@@ -110,10 +111,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         _timerState = TimerState.play;
         _timerDuration = Duration.zero;
         _isFocusMode = true;
-        _resumeTime = DateTime.now();
+        _startTime = _resumeTime = DateTime.now();
         final remainSeconds = _getModeSeconds();
         _remainSecondsNotifier.value = remainSeconds;
-        int rtcTimeMillis = _resumeTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
+        int rtcTimeMillis = _startTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
       });
@@ -177,15 +178,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       _setAlarmSoundVibration();
       if (_isFocusMode) {
         _pomodoroCount++;
-        MyRealm.instance.addPomodoro(_settings.instantTaskName, _settings.selectedTaskId, _focusTimeMinutes);
+        MyRealm.instance
+            .addPomodoro(_startTime, _settings.instantTaskName, _settings.selectedTaskId, _focusTimeMinutes);
         context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
       }
       _updatePomodoroMinutes();
       setState(() {
         _isFocusMode = !_isFocusMode;
-        _resumeTime = DateTime.now();
+        _startTime = _resumeTime = DateTime.now();
         _timerDuration = Duration.zero;
-        int rtcTimeMillis = _resumeTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
+        int rtcTimeMillis = _startTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
       });

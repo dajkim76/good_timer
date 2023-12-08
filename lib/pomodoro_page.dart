@@ -210,7 +210,7 @@ class _PomodoroState extends State<PomodoroPage> {
                       style: const TextStyle(fontSize: 15),
                     ),
                     Text(
-                      "${DateFormat.Hm().format(_pomodoroList[index].doneTime.toLocal())} (${S.of(context).minutes_fmt(_pomodoroList[index].focusTimeMinutes)})",
+                      "${DateFormat.Hm().format(_pomodoroList[index].endTime.toLocal())} (${S.of(context).minutes_fmt(_pomodoroList[index].focusTimeMinutes)})",
                       style: const TextStyle(fontSize: 11, color: Colors.white54),
                     )
                   ],
