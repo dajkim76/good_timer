@@ -210,15 +210,12 @@ class _PomodoroState extends State<PomodoroPage> {
                       style: const TextStyle(fontSize: 15),
                     ),
                     Text(
-                      "${DateFormat.Hm().format(_pomodoroList[index].endTime.toLocal())} (${S.of(context).minutes_fmt(_pomodoroList[index].focusTimeMinutes)})",
+                      S.of(context).minutes_fmt(_pomodoroList[index].focusTimeMinutes),
                       style: const TextStyle(fontSize: 11, color: Colors.white54),
                     )
                   ],
                 ),
-                subtitle: _pomodoroList[index].memo?.isNotEmpty == true
-                    ? Text(_pomodoroList[index].memo!,
-                        overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue, fontSize: 14))
-                    : null,
+                subtitle: buildPomodoroSubtitle(index),
                 trailing: PopupMenuButton<int>(
                   onSelected: (int menuIndex) {
                     if (menuIndex == 0) onClickMemo(context, _pomodoroList[index]);
@@ -237,6 +234,26 @@ class _PomodoroState extends State<PomodoroPage> {
                     ];
                   },
                 )));
+  }
+
+  Widget? buildPomodoroSubtitle(int index) {
+    var timeStr =
+        "${DateFormat.Hm().format(_pomodoroList[index].startTime.toLocal())} ~ ${DateFormat.Hm().format(_pomodoroList[index].endTime.toLocal())}";
+    return _pomodoroList[index].memo?.isNotEmpty == true
+        ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(_pomodoroList[index].memo!,
+                overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue, fontSize: 14)),
+            Text(
+              timeStr,
+              style: const TextStyle(fontSize: 11, color: Colors.white54),
+            )
+          ])
+        : Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            Text(
+              timeStr,
+              style: const TextStyle(fontSize: 11, color: Colors.white54),
+            )
+          ]);
   }
 
   void onClickDelete(BuildContext context, Pomodoro pomodoro) {

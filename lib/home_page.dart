@@ -268,7 +268,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _onClickTaskName() async {
-    _textEditingController.text = "";
+    _textEditingController.text = _settings.instantTaskName ?? "";
     String? newValue = await showInputDialog(context, _textEditingController, S.of(context).instant_task_name);
     if (newValue?.isNotEmpty == true) {
       _settings.setInstantTaskName(newValue!);
@@ -422,16 +422,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           }),
       actions: <Widget>[
         IconButton(
-          icon: PomodoroCountIcon(pomodoroCount.todayPomodoroCount),
-          onPressed: _onClickPomodoro,
-          tooltip: S.of(context).pomodoro_count,
-        ),
-        IconButton(
           icon: const Icon(Icons.format_list_numbered),
           onPressed: () {
             _key.currentState?.openEndDrawer();
           },
           tooltip: S.of(context).tasks,
+        ),
+        IconButton(
+          icon: PomodoroCountIcon(pomodoroCount.todayPomodoroCount),
+          onPressed: _onClickPomodoro,
+          tooltip: S.of(context).pomodoro_count,
         ),
         IconButton(
           icon: const Icon(Icons.settings),
