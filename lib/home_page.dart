@@ -36,7 +36,7 @@ enum TimerState { stop, play, pause }
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   Timer? _timer;
   bool _isFocusMode = false;
-  DateTime _startedTime = DateTime.now();
+  DateTime _resumeTime = DateTime.now();
   Duration _timerDuration = Duration.zero;
   TimerState _timerState = TimerState.stop;
   final GlobalKey<ScaffoldState> _key = GlobalKey(); // for open drawer
@@ -110,10 +110,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         _timerState = TimerState.play;
         _timerDuration = Duration.zero;
         _isFocusMode = true;
-        _startedTime = DateTime.now();
+        _resumeTime = DateTime.now();
         final remainSeconds = _getModeSeconds();
         _remainSecondsNotifier.value = remainSeconds;
-        int rtcTimeMillis = _startedTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
+        int rtcTimeMillis = _resumeTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
       });
@@ -126,8 +126,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     assert(_timer != null);
     setState(() {
       _timerState = TimerState.pause;
-      _timerDuration = _timerDuration + DateTime.now().difference(_startedTime);
-      _startedTime = DateTime.now();
+      _timerDuration = _timerDuration + DateTime.now().difference(_resumeTime);
+      _resumeTime = DateTime.now();
     });
     Future future = MyNativePlugin.cancelAlarm(1);
     handleError(future);
@@ -139,9 +139,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     assert(_timer != null);
     setState(() {
       _timerState = TimerState.play;
-      _startedTime = DateTime.now();
+      _resumeTime = DateTime.now();
       Duration remainDuration = Duration(seconds: _getModeSeconds()) - _timerDuration;
-      int rtcTimeMillis = _startedTime.add(remainDuration).millisecondsSinceEpoch;
+      int rtcTimeMillis = _resumeTime.add(remainDuration).millisecondsSinceEpoch;
       Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
       handleError(future);
     });
@@ -172,7 +172,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     if (_timerState != TimerState.play) return;
 
     DateTime now = DateTime.now();
-    int remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_startedTime)).inSeconds;
+    int remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_resumeTime)).inSeconds;
     if (remainSeconds <= 0) {
       _setAlarmSoundVibration();
       if (_isFocusMode) {
@@ -183,9 +183,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       _updatePomodoroMinutes();
       setState(() {
         _isFocusMode = !_isFocusMode;
-        _startedTime = DateTime.now();
+        _resumeTime = DateTime.now();
         _timerDuration = Duration.zero;
-        int rtcTimeMillis = _startedTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
+        int rtcTimeMillis = _resumeTime.add(Duration(seconds: _getModeSeconds())).millisecondsSinceEpoch;
         Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
         handleError(future);
       });
@@ -206,7 +206,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         remainSeconds = _getModeSeconds() - _timerDuration.inSeconds;
       } else {
         DateTime now = DateTime.now();
-        remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_startedTime)).inSeconds;
+        remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_resumeTime)).inSeconds;
       }
     } else {
       remainSeconds = _getModeSeconds();
@@ -361,7 +361,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               // wireframe for each widget.
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                TextButton(
+                OutlinedButton(
+                  onPressed: _onClickTaskName,
                   child: Text(
                     _getModeLabel(),
                     textAlign: TextAlign.center,
@@ -369,7 +370,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     maxLines: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 1,
                     style: TextStyle(color: _getModeLabelColor(), fontSize: 40, fontWeight: FontWeight.bold),
                   ),
-                  onPressed: _onClickTaskName,
                 ),
                 !settings.isAnalogClock
                     ? Text(
