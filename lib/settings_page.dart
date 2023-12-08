@@ -79,6 +79,7 @@ class _SettingsState extends State<SettingsPage> {
                     style: const TextStyle(fontSize: 17, color: Colors.orange, fontWeight: FontWeight.bold)),
                 tiles: <SettingsTile>[
                   SettingsTile.switchTile(
+                    activeSwitchColor: Colors.blue,
                     onToggle: (value) {
                       settings.save(value);
                     },
@@ -90,6 +91,7 @@ class _SettingsState extends State<SettingsPage> {
                     ),
                   ),
                   SettingsTile.switchTile(
+                    activeSwitchColor: Colors.blue,
                     onToggle: (value) {
                       settings.setVibration(value);
                     },
@@ -101,6 +103,7 @@ class _SettingsState extends State<SettingsPage> {
                     ),
                   ),
                   SettingsTile.switchTile(
+                    activeSwitchColor: Colors.blue,
                     onToggle: (value) {
                       settings.setAnalogClock(value);
                     },
@@ -131,7 +134,7 @@ class _SettingsState extends State<SettingsPage> {
                   ),
                   SettingsTile.navigation(
                     title: Text(
-                      S.of(context).open_play_store_page,
+                      S.of(context).rate_this_app,
                       style: const TextStyle(fontSize: kFontSize),
                     ),
                     leading: const Icon(Icons.store),

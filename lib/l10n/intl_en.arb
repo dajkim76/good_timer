@@ -24,7 +24,7 @@
   "rename": "Rename",
   "empty_data": "Empty data",
   "memo": "Memo",
-  "pomodoro_count_fmt": "{count, plural, =0{No pomodoro} =1{1 pomodoro} other{{count} Pomodoros}}",
+  "pomodoro_count_fmt": "{count, plural, =0{No Pomodoro} =1{1 Pomodoro} other{{count} Pomodoros}}",
   "calendar_month": "Month",
   "calendar_two_weeks": "2 weeks",
   "calendar_week": "Week",
@@ -46,5 +46,6 @@
   "sort_by_name": "Sort by name",
   "stop_pomodoro_first": "Stop the Pomodoro first",
   "check_the_range": "Check the range",
-  "open_play_store_page": "Open Play Store page"
+  "rate_this_app": "Rate this app",
+  "select_task": "Select task"
 }

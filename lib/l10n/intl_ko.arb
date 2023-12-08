@@ -46,5 +46,6 @@
   "sort_by_name": "이름순으로 정열",
   "stop_pomodoro_first": "먼저 뽀모도로를 중지하세요",
   "check_the_range": "범위를 확인하세요",
-  "open_play_store_page": "플레이 스토어 페이지 열기"
+  "rate_this_app": "이 앱 평가하기",
+  "select_task": "작업 선택"
 }

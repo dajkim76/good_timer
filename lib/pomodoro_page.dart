@@ -337,7 +337,7 @@ class _PomodoroState extends State<PomodoroPage> {
     showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(title: Text(S.of(context).tasks), content: _buildTaskList(), actions: <Widget>[
+          return AlertDialog(title: Text(S.of(context).select_task), content: _buildTaskList(), actions: <Widget>[
             TextButton(
                 child: Text(S.of(context).cancel),
                 onPressed: () {
