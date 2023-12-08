@@ -30,7 +30,7 @@ class _Pomodoro {
   late final int taskId;
   late final String taskName;
   late DateTime doneTime;
-  late int durationMinutes;
+  late int focusTimeMinutes;
   String? memo;
   String? extra;
 }

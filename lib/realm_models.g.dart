@@ -103,7 +103,7 @@ class Pomodoro extends _Pomodoro
     int taskId,
     String taskName,
     DateTime doneTime,
-    int durationMinutes, {
+    int focusTimeMinutes, {
     String? memo,
     String? extra,
   }) {
@@ -112,7 +112,7 @@ class Pomodoro extends _Pomodoro
     RealmObjectBase.set(this, 'taskId', taskId);
     RealmObjectBase.set(this, 'taskName', taskName);
     RealmObjectBase.set(this, 'doneTime', doneTime);
-    RealmObjectBase.set(this, 'durationMinutes', durationMinutes);
+    RealmObjectBase.set(this, 'focusTimeMinutes', focusTimeMinutes);
     RealmObjectBase.set(this, 'memo', memo);
     RealmObjectBase.set(this, 'extra', extra);
   }
@@ -147,11 +147,11 @@ class Pomodoro extends _Pomodoro
   set doneTime(DateTime value) => RealmObjectBase.set(this, 'doneTime', value);
 
   @override
-  int get durationMinutes =>
-      RealmObjectBase.get<int>(this, 'durationMinutes') as int;
+  int get focusTimeMinutes =>
+      RealmObjectBase.get<int>(this, 'focusTimeMinutes') as int;
   @override
-  set durationMinutes(int value) =>
-      RealmObjectBase.set(this, 'durationMinutes', value);
+  set focusTimeMinutes(int value) =>
+      RealmObjectBase.set(this, 'focusTimeMinutes', value);
 
   @override
   String? get memo => RealmObjectBase.get<String>(this, 'memo') as String?;
@@ -180,7 +180,7 @@ class Pomodoro extends _Pomodoro
       SchemaProperty('taskId', RealmPropertyType.int),
       SchemaProperty('taskName', RealmPropertyType.string),
       SchemaProperty('doneTime', RealmPropertyType.timestamp),
-      SchemaProperty('durationMinutes', RealmPropertyType.int),
+      SchemaProperty('focusTimeMinutes', RealmPropertyType.int),
       SchemaProperty('memo', RealmPropertyType.string, optional: true),
       SchemaProperty('extra', RealmPropertyType.string, optional: true),
     ]);

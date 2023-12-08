@@ -17,3 +17,13 @@ void showToast(String message, {bool isLong = false}) {
 void handleError(Future future) {
   future.catchError((err) => showToast(err.toString(), isLong: true));
 }
+
+extension ListUtils<T> on List<T> {
+  num sumBy(num f(T element)) {
+    num sum = 0;
+    for (var item in this) {
+      sum += f(item);
+    }
+    return sum;
+  }
+}

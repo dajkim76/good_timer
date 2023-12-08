@@ -197,16 +197,25 @@ class _PomodoroState extends State<PomodoroPage> {
                   (index + 1).toString(),
                   style: const TextStyle(fontSize: 17, color: Colors.white),
                 ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+                horizontalTitleGap: 8,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_pomodoroList[index].taskName, overflow: TextOverflow.ellipsis),
-                    Text(DateFormat.Hm().format(_pomodoroList[index].doneTime.toLocal()))
+                    Text(
+                      _pomodoroList[index].taskName,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                    Text(
+                      "${DateFormat.Hm().format(_pomodoroList[index].doneTime.toLocal())} (${S.of(context).minutes_fmt(_pomodoroList[index].focusTimeMinutes)})",
+                      style: const TextStyle(fontSize: 11, color: Colors.white54),
+                    )
                   ],
                 ),
                 subtitle: _pomodoroList[index].memo?.isNotEmpty == true
                     ? Text(_pomodoroList[index].memo!,
-                        overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue))
+                        overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue, fontSize: 14))
                     : null,
                 trailing: PopupMenuButton<int>(
                   onSelected: (int menuIndex) {

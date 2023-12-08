@@ -29,7 +29,7 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 2 / 3,
+      width: MediaQuery.of(context).size.width * 3 / 4,
       color: Theme.of(context).dialogBackgroundColor,
       padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
       child: Column(
@@ -49,9 +49,10 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
               title: buildTaskTitle(_taskList[index]),
               subtitle: _taskList[index].memo?.isNotEmpty == true
                   ? Text(_taskList[index].memo!,
-                      overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue))
+                      overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.blue, fontSize: 14))
                   : null,
               contentPadding: const EdgeInsets.all(0),
+              horizontalTitleGap: 8,
               onTap: () {
                 context.read<SettingsProvider>().setSelectedTask(_taskList[index]);
                 Scaffold.of(context).closeEndDrawer();
@@ -110,11 +111,19 @@ class _TaskListDrawerState extends State<TaskListDrawer> {
 
   Widget buildTaskTitle(Task task) {
     if (task.isHidden) {
-      return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(task.name, overflow: TextOverflow.ellipsis), const Icon(Icons.visibility_off)]);
+      return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text(
+          task.name,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 15),
+        ),
+        const Icon(
+          Icons.visibility_off,
+          size: 20,
+        )
+      ]);
     } else {
-      return Text(task.name, overflow: TextOverflow.ellipsis);
+      return Text(task.name, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15));
     }
   }
 

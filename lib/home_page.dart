@@ -173,12 +173,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     int remainSeconds = _getModeSeconds() - (_timerDuration + now.difference(_startedTime)).inSeconds;
     if (remainSeconds <= 0) {
       _setAlarmSoundVibration();
-      _updatePomodoroMinutes();
       if (_isFocusMode) {
         _pomodoroCount++;
-        MyRealm.instance.addPomodoro(_settings.selectedTaskId, 25);
+        MyRealm.instance.addPomodoro(_settings.selectedTaskId, _focusTimeMinutes);
         context.read<PomodoroCountProvider>().notifyTodayPomodoroCount();
       }
+      _updatePomodoroMinutes();
       setState(() {
         _isFocusMode = !_isFocusMode;
         _startedTime = DateTime.now();
