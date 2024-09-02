@@ -30,9 +30,7 @@ class MyRealm {
     }
   }
 
-  /**
-   * Task
-   */
+  /// Task
   List<Task> getTaskList(bool showAllTask, bool sortByName) {
     final List<Task> result;
     if (showAllTask) {
@@ -84,9 +82,7 @@ class MyRealm {
     realm.write(() => realm.delete<Task>(task));
   }
 
-  /**
-   * Pomodoro
-   */
+  /// Pomodoro
   int getTodayPomodoroCount() {
     String todayStr = DateFormat('yyyyMMdd').format(DateTime.now());
     return realm.query<Pomodoro>("dayInt == $todayStr").length;
