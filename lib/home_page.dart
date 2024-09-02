@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:good_timer/clock_dial_painter.dart';
 import 'package:good_timer/my_native_plugin.dart';
 import 'package:good_timer/my_providers.dart';
@@ -112,8 +111,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         final remainSeconds = _getModeSeconds();
         _remainSecondsNotifier.value = remainSeconds;
         int rtcTimeMillis = _startTime.add(Duration(seconds: remainSeconds)).millisecondsSinceEpoch;
-        Future future = MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
-        handleError(future);
+        MyNativePlugin.setAlarm(1, rtcTimeMillis, true);
       });
       Wakelock.enable();
       HapticFeedback.lightImpact();

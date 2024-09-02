@@ -106,9 +106,9 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
                 try {
                     val intent = Intent(
                         android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
-                        Uri.parse("package:" + activity!!.getPackageName())
+                        Uri.parse("package:" + context.getPackageName())
                     )
-                    activity!!.startActivity(intent)
+                    activity?.startActivity(intent)
                     result.success(true)
                 } catch (ex: Exception) {
                     result.error(ex.toString(), null, null)
@@ -140,7 +140,14 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
             return false
         }
         val alarmManager: AlarmManager = context.getSystemService(Activity.ALARM_SERVICE) as AlarmManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= 31 /*Android 12*/) {
+            val powerManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (powerManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, rtcTimeMillis, getPendingIntent(id, wakeUp))
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, rtcTimeMillis, getPendingIntent(id, wakeUp))
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, rtcTimeMillis, getPendingIntent(id, wakeUp))
         } else {
             alarmManager.set(AlarmManager.RTC_WAKEUP, rtcTimeMillis, getPendingIntent(id, wakeUp))
