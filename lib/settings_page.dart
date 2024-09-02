@@ -14,8 +14,9 @@ class SettingsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _SettingsState();
 }
 
-class _SettingsState extends State<SettingsPage> {
+class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   int _batteryIgnoredStatus = -1;
+  int _settingAlarmsStatus = -1;
   final TextEditingController _textFieldController = TextEditingController();
   static const kFontSize = 15.0;
 
@@ -23,11 +24,22 @@ class _SettingsState extends State<SettingsPage> {
   void initState() {
     super.initState();
     queryBatteryIgnoredStatus();
+    _querySettingAlarmsStatus();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      queryBatteryIgnoredStatus();
+      _querySettingAlarmsStatus();
+    }
   }
 
   @override
   void dispose() {
     _textFieldController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -85,6 +97,24 @@ class _SettingsState extends State<SettingsPage> {
                 title: Text(S.of(context).general,
                     style: const TextStyle(fontSize: 17, color: Colors.orange, fontWeight: FontWeight.bold)),
                 tiles: <SettingsTile>[
+                  SettingsTile.navigation(
+                    title: Text(
+                      "Allow setting alarms(For waking up screen)",
+                      style: const TextStyle(fontSize: kFontSize),
+                    ),
+                    leading: const Icon(Icons.alarm_on),
+                    description: Text(
+                      _getSettingAlarmsMsgByStatus(),
+                      style: const TextStyle(color: Colors.blue),
+                    ),
+                    onPressed: (context) async {
+                      if (_settingAlarmsStatus == -1) {
+                        showToast(_getSettingAlarmsMsgByStatus());
+                      } else {
+                        await MyNativePlugin.openSettingAlarms();
+                      }
+                    },
+                  ),
                   SettingsTile.switchTile(
                     activeSwitchColor: Colors.blue,
                     onToggle: (value) {
@@ -184,6 +214,24 @@ class _SettingsState extends State<SettingsPage> {
       if (mounted) {
         setState(() {
           _batteryIgnoredStatus = value;
+        });
+      }
+    });
+  }
+
+  String _getSettingAlarmsMsgByStatus() {
+    switch(_settingAlarmsStatus) {
+      case 1: return "Allowed";
+      case 0: return "Not allowed";
+      default: return "Always allowed"; // when SDK_INT < 31
+    }
+  }
+
+  void _querySettingAlarmsStatus() {
+    MyNativePlugin.querySettingAlarms().then((value) {
+      if (mounted) {
+        setState(() {
+          _settingAlarmsStatus = value;
         });
       }
     });
