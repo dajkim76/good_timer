@@ -23,7 +23,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    queryBatteryIgnoredStatus();
+    _queryBatteryIgnoredStatus();
     _querySettingAlarmsStatus();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -31,7 +31,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      queryBatteryIgnoredStatus();
+      _queryBatteryIgnoredStatus();
       _querySettingAlarmsStatus();
     }
   }
@@ -166,7 +166,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                       if (result != 0) {
                         showToast(_getBatteryIgnoredMsgByStatus(result));
                       }
-                      queryBatteryIgnoredStatus();
+                      _queryBatteryIgnoredStatus();
                     },
                   ),
                   SettingsTile.navigation(
@@ -209,7 +209,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     return _getBatteryIgnoredMsgByStatus(_batteryIgnoredStatus);
   }
 
-  void queryBatteryIgnoredStatus() {
+  void _queryBatteryIgnoredStatus() {
     MyNativePlugin.isIgnoreBatteryOptimization().then((value) {
       if (mounted) {
         setState(() {
