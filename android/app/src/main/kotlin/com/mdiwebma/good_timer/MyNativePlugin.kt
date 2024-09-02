@@ -87,8 +87,34 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
             try {
                 openAppMarketPage()
                 result.success(true)
-            }catch (ex: Exception) {
+            } catch (ex: Exception) {
                 result.error(ex.toString(), null, null)
+            }
+        } else if (call.method == "querySettingAlarms") {
+            if (Build.VERSION.SDK_INT >= 31 /*Android 12*/) {
+                val powerManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                return if (powerManager.canScheduleExactAlarms()) {
+                    result.success(1)
+                } else {
+                    result.success(0)
+                }
+            } else {
+                result.success(-1)
+            }
+        } else if (call.method == "openSettingAlarms") {
+            if (Build.VERSION.SDK_INT >= 31 /*Android 12*/) {
+                try {
+                    val intent = Intent(
+                        android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                        Uri.parse("package:" + activity!!.getPackageName())
+                    )
+                    activity!!.startActivity(intent)
+                    result.success(true)
+                } catch (ex: Exception) {
+                    result.error(ex.toString(), null, null)
+                }
+            } else {
+                result.success(false)
             }
         } else {
             result.notImplemented()

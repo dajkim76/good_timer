@@ -43,4 +43,18 @@ class MyNativePlugin {
     await _channel.invokeMethod("openAppMarketPage");
     return true;
   }
+
+  // check Exact Alarm permission
+  // result is -1: not supported, 0:not allowed, 1: allowed
+  static Future<int> querySettingAlarms() async {
+    final int result = await _channel.invokeMethod("querySettingAlarms");
+    return result;
+  }
+
+  // open SettingAlarms permission page
+  // true: succeeded, false: not supported, exception: error occurred
+  static Future<bool> openSettingAlarms() async {
+    await _channel.invokeMethod("openSettingAlarms");
+    return true;
+  }
 }
