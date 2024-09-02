@@ -48,5 +48,9 @@
   "check_the_range": "Check the range",
   "rate_this_app": "Rate this app",
   "select_task": "Select task",
-  "instant_task_name": "Instant task name"
+  "instant_task_name": "Instant task name",
+  "allow_setting_alarms": "Allow setting alarms(For waking up screen)",
+  "allowed": "Allowed",
+  "not_allowed": "Not allowed",
+  "always_allowed": "Always allowed"
 }

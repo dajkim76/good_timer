@@ -48,5 +48,9 @@
   "check_the_range": "범위를 확인하세요",
   "rate_this_app": "이 앱 평가하기",
   "select_task": "작업 선택",
-  "instant_task_name": "인스턴트 작업 이름"
+  "instant_task_name": "인스턴트 작업 이름",
+  "allow_setting_alarms": "알람 권한 허용하기(화면 깨우기 용도)",
+  "allowed": "허용됨",
+  "not_allowed": "허용 안 됨",
+  "always_allowed": "항상 허용됨"
 }

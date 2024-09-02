@@ -99,7 +99,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 tiles: <SettingsTile>[
                   SettingsTile.navigation(
                     title: Text(
-                      "Allow setting alarms(For waking up screen)",
+                      S.of(context).allow_setting_alarms,
                       style: const TextStyle(fontSize: kFontSize),
                     ),
                     leading: const Icon(Icons.alarm_on),
@@ -221,9 +221,9 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
 
   String _getSettingAlarmsMsgByStatus() {
     switch(_settingAlarmsStatus) {
-      case 1: return "Allowed";
-      case 0: return "Not allowed";
-      default: return "Always allowed"; // when SDK_INT < 31
+      case 1: return S.of(context).allowed;
+      case 0: return S.of(context).not_allowed;
+      default: return S.of(context).always_allowed; // when SDK_INT < 31
     }
   }
 
