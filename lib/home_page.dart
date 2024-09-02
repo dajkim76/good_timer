@@ -54,9 +54,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     super.initState();
     // 풀스크린 만들기
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    if (kDebugMode) {
-      MyNativePlugin.getAppVersionName().then((value) => Fluttertoast.showToast(msg: value));
-    }
     _settings = context.read<SettingsProvider>();
     _updatePomodoroMinutes();
     _remainSecondsNotifier.value = _getModeSeconds();
