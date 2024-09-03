@@ -141,8 +141,7 @@ class MyNativePlugin: FlutterPlugin, MethodCallHandler {
         }
         val alarmManager: AlarmManager = context.getSystemService(Activity.ALARM_SERVICE) as AlarmManager
         if (Build.VERSION.SDK_INT >= 31 /*Android 12*/) {
-            val powerManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (powerManager.canScheduleExactAlarms()) {
+            if (alarmManager.canScheduleExactAlarms()) {
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, rtcTimeMillis, getPendingIntent(id, wakeUp))
             } else {
                 alarmManager.set(AlarmManager.RTC_WAKEUP, rtcTimeMillis, getPendingIntent(id, wakeUp))
