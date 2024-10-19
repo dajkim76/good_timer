@@ -4,6 +4,7 @@ import 'package:good_timer/my_providers.dart';
 import 'package:good_timer/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'generated/l10n.dart';
 
@@ -185,6 +186,19 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                         }),
                     onPressed: (context) async {
                       MyNativePlugin.openAppMarketPage();
+                    },
+                  ),
+                  SettingsTile.navigation(
+                    title: Text(
+                      S.of(context).app_icon,
+                      style: const TextStyle(fontSize: kFontSize),
+                    ),
+                    leading: const Icon(Icons.open_in_browser),
+                    description: Text(
+                      "Pomodoro icons created by Flat Icons - Flaticon",
+                      style: const TextStyle(color: Colors.blue)),
+                    onPressed: (context) async {
+                      await launchUrl(Uri.parse("https://www.flaticon.com/free-icons/pomodoro"));
                     },
                   )
                 ])

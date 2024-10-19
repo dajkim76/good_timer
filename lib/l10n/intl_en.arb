@@ -52,5 +52,6 @@
   "allow_setting_alarms": "Allow setting alarms(For waking up screen)",
   "allowed": "Allowed",
   "not_allowed": "Not allowed",
-  "always_allowed": "Always allowed"
+  "always_allowed": "Always allowed",
+  "app_icon": "App icon"
 }
