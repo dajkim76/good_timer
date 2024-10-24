@@ -195,10 +195,10 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                     ),
                     leading: const Icon(Icons.open_in_browser),
                     description: Text(
-                      "Pomodoro icons created by Flat Icons - Flaticon",
+                      "Pomodoro icons created by Flat Finance Icons",
                       style: const TextStyle(color: Colors.blue)),
                     onPressed: (context) async {
-                      await launchUrl(Uri.parse("https://www.flaticon.com/free-icons/pomodoro"));
+                      await launchUrl(Uri.parse("https://www.iconarchive.com/show/flat-finance-icons-by-graphicloads/timer-icon.html"));
                     },
                   )
                 ])
